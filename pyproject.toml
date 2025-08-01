@@ -12,7 +12,7 @@ license = { text = "MIT" }
 name = "openai-usage"
 readme = "README.md"
 requires-python = ">=3.11,<4"
-version = "0.1.0"
+version = "0.2.0"
 
 [project.urls]
 Homepage = "https://github.com/allen2c/openai-usage"
@@ -28,9 +28,7 @@ all = []
 [tool.poetry.group.dev.dependencies]
 black = { extras = ["jupyter"], version = "*" }
 codepress = "*"
-docling = ">=2"
 isort = "*"
-playwright = ">=1"
 poetry-plugin-export = "*"
 pytest = "*"
 pytest-asyncio = "*"
