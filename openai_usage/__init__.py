@@ -153,9 +153,11 @@ class Usage(pydantic.BaseModel):
         if isinstance(model, str):
             from openai_usage.extra.open_router import get_model
 
-            model = get_model(model)
-            if model is None:
+            might_model = get_model(model, realtime_pricing=realtime_pricing)
+            if might_model is None:
                 raise ValueError(f"No model found for '{model}'")
+            else:
+                model = might_model
 
         pricing = model.pricing
 
