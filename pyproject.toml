@@ -7,20 +7,20 @@ dependencies = [
   "pydantic (>=2)",
   "str-or-none",
 ]
-description = "AllenChou's Python template."
+description = "Simple Library for OpenAI Usage"
 license = { text = "MIT" }
-name = "ac-py-template"
+name = "openai-usage"
 readme = "README.md"
 requires-python = ">=3.11,<4"
 version = "0.1.0"
 
 [project.urls]
-Homepage = "https://github.com/allen2c/ac-py-template"
-"PyPI" = "https://pypi.org/project/ac-py-template/"
-Repository = "https://github.com/allen2c/ac-py-template"
+Homepage = "https://github.com/allen2c/openai-usage"
+"PyPI" = "https://pypi.org/project/openai-usage/"
+Repository = "https://github.com/allen2c/openai-usage"
 
 [tool.poetry]
-packages = [{ include = "ac_py_template" }]
+packages = [{ include = "openai_usage" }]
 
 [tool.poetry.extras]
 all = []
