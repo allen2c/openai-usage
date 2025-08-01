@@ -8,6 +8,7 @@ import pathlib
 
 import agents
 import pydantic
+from openai.types.completion_usage import CompletionUsage
 from openai.types.responses.response_usage import (
     InputTokensDetails,
     OutputTokensDetails,
@@ -37,15 +38,18 @@ class Usage(pydantic.BaseModel):
     @classmethod
     def from_openai(
         cls,
-        openai_usage: ResponseUsage | agents.RunContextWrapper | agents.Usage,
+        openai_usage: (
+            ResponseUsage | agents.RunContextWrapper | agents.Usage | CompletionUsage
+        ),
         *,
         inplace: bool = False,
     ) -> "Usage":
         """Create Usage from OpenAI usage objects.
 
-        Supports ResponseUsage, RunContextWrapper, and agents.Usage types.
+        Supports ResponseUsage, RunContextWrapper, agents.Usage, and CompletionUsage types.
         Returns new instance unless inplace=True.
-        """
+        """  # noqa: E501
+
         if isinstance(openai_usage, ResponseUsage):
             usage = cls(
                 requests=1,
@@ -73,6 +77,31 @@ class Usage(pydantic.BaseModel):
                 output_tokens_details=openai_usage.output_tokens_details,
                 total_tokens=openai_usage.total_tokens,
             )
+
+        elif isinstance(openai_usage, CompletionUsage):
+            usage = cls(
+                requests=1,
+                input_tokens=openai_usage.prompt_tokens,
+                input_tokens_details=InputTokensDetails(
+                    cached_tokens=(
+                        openai_usage.prompt_tokens_details.cached_tokens or 0
+                        if openai_usage.prompt_tokens_details
+                        else 0
+                    )
+                ),
+                output_tokens=openai_usage.completion_tokens,
+                output_tokens_details=OutputTokensDetails(
+                    reasoning_tokens=(
+                        openai_usage.completion_tokens_details.reasoning_tokens or 0
+                        if openai_usage.completion_tokens_details
+                        else 0
+                    )
+                ),
+                total_tokens=openai_usage.total_tokens,
+            )
+
+        else:
+            raise ValueError(f"Unsupported usage type: {type(openai_usage)}")
 
         if inplace:
             return usage
