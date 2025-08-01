@@ -1,4 +1,12 @@
-from openai.types.completion_usage import CompletionUsage
+from openai.types.completion_usage import (
+    CompletionUsage,
+    PromptTokensDetails,
+)
+from openai.types.responses.response_usage import (
+    InputTokensDetails,
+    OutputTokensDetails,
+    ResponseUsage,
+)
 
 from openai_usage import Usage
 
@@ -18,6 +26,51 @@ def test_from_openai_completion_usage():
         total_tokens=30,
     )
     usage = Usage.from_openai(openai_usage)
+    assert usage.requests == 1
+    assert usage.input_tokens == 10
+    assert usage.output_tokens == 20
+    assert usage.total_tokens == 30
+
+
+def test_from_openai_completion_usage_with_details():
+    openai_usage = CompletionUsage(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_tokens_details=PromptTokensDetails(cached_tokens=5),
+    )
+    usage = Usage.from_openai(openai_usage)
+    assert usage.requests == 1
+    assert usage.input_tokens == 10
+    assert usage.output_tokens == 20
+    assert usage.total_tokens == 30
+    assert usage.input_tokens_details.cached_tokens == 5
+
+
+def test_from_openai_response_usage():
+    openai_usage = ResponseUsage(
+        input_tokens=10,
+        output_tokens=20,
+        total_tokens=30,
+        input_tokens_details=InputTokensDetails(cached_tokens=5),
+        output_tokens_details=OutputTokensDetails(reasoning_tokens=8),
+    )
+    usage = Usage.from_openai(openai_usage)
+    assert usage.requests == 1
+    assert usage.input_tokens == 10
+    assert usage.output_tokens == 20
+    assert usage.total_tokens == 30
+    assert usage.input_tokens_details.cached_tokens == 5
+    assert usage.output_tokens_details.reasoning_tokens == 8
+
+
+def test_from_openai_inplace():
+    openai_usage = CompletionUsage(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+    )
+    usage = Usage.from_openai(openai_usage, inplace=True)
     assert usage.requests == 1
     assert usage.input_tokens == 10
     assert usage.output_tokens == 20
