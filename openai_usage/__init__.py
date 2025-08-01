@@ -140,7 +140,10 @@ class Usage(pydantic.BaseModel):
         )
 
     def estimate_cost(
-        self, model: typing.Union["OpenRouterModel", str, None] = None
+        self,
+        model: typing.Union["OpenRouterModel", str, None] = None,
+        *,
+        realtime_pricing: bool = False,
     ) -> float:
         model = model or self.model
         if model is None:

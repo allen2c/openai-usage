@@ -1,5 +1,6 @@
 import functools
 import logging
+import pathlib
 import re
 import typing
 
@@ -12,24 +13,38 @@ MODEL_CONFIG_EXTRA: typing.Literal["forbid", "allow", "ignore"] = "ignore"
 
 
 @functools.cache
-def get_models() -> "GetOpenRouterModelsResponse":
+def get_models(realtime_pricing: bool = False) -> "GetOpenRouterModelsResponse":
     """Fetch all available models from OpenRouter API.
 
     Returns cached response for performance.
     """
-    url = "https://openrouter.ai/api/v1/models"
-    response = requests.get(url)
-    response.raise_for_status()
-    return GetOpenRouterModelsResponse.model_validate_json(response.text)
+
+    if realtime_pricing:
+        url = "https://openrouter.ai/api/v1/models"
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            models = GetOpenRouterModelsResponse.model_validate_json(response.text)
+            logger.info(f"There are {len(models.data)} models")
+            return models
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Failed to fetch models: {e}")
+
+    logger.info("Using locally cached models")
+    return GetOpenRouterModelsResponse.model_validate_json(
+        pathlib.Path(__file__).parent.parent.joinpath("models.json").read_text()
+    )
 
 
-def get_model(model_name: str) -> typing.Optional["OpenRouterModel"]:
+def get_model(
+    model_name: str, *, realtime_pricing: bool = False
+) -> typing.Optional["OpenRouterModel"]:
     """Find a model by name with flexible matching.
 
     Returns exact match first, then partial match.
     Handles multiple matches by choosing shortest ID.
     """
-    all_models = get_models()
+    all_models = get_models(realtime_pricing=realtime_pricing)
 
     models: list[OpenRouterModel] = []
     for model in all_models.data:
