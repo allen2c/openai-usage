@@ -4,7 +4,9 @@
 Simple models for tracking and aggregating OpenAI API usage data.
 """
 
+import logging
 import pathlib
+import typing
 
 import agents
 import pydantic
@@ -15,7 +17,13 @@ from openai.types.responses.response_usage import (
     ResponseUsage,
 )
 
+if typing.TYPE_CHECKING:
+    from openai_usage.extra.open_router import OpenRouterModel
+
 __version__ = pathlib.Path(__file__).parent.joinpath("VERSION").read_text().strip()
+
+
+logger = logging.getLogger(__name__)
 
 
 class Usage(pydantic.BaseModel):
@@ -34,6 +42,10 @@ class Usage(pydantic.BaseModel):
         default_factory=lambda: OutputTokensDetails(reasoning_tokens=0)
     )
     total_tokens: int = 0
+
+    # Extra fields from OpenAI schema
+    model: str | None = None
+    cost: float | None = None
 
     @classmethod
     def from_openai(
@@ -126,3 +138,43 @@ class Usage(pydantic.BaseModel):
             reasoning_tokens=self.output_tokens_details.reasoning_tokens
             + other.output_tokens_details.reasoning_tokens
         )
+
+    def estimate_cost(
+        self,
+        model: typing.Union["OpenRouterModel", str, None] = None,
+        *,
+        realtime_pricing: bool = False,
+    ) -> float:
+        model = model or self.model
+        if model is None:
+            logger.warning("No model provided, using 'gpt-4o-mini' as default")
+            model = "gpt-4o-mini"
+
+        if isinstance(model, str):
+            from openai_usage.extra.open_router import get_model
+
+            might_model = get_model(model, realtime_pricing=realtime_pricing)
+            if might_model is None:
+                raise ValueError(f"No model found for '{model}'")
+            else:
+                model = might_model
+
+        pricing = model.pricing
+
+        input_tokens_w_cached = self.input_tokens_details.cached_tokens
+        input_tokens_wo_cached = self.input_tokens - input_tokens_w_cached
+
+        output_tokens_w_reasoning = self.output_tokens_details.reasoning_tokens
+        output_tokens_wo_reasoning = self.output_tokens - output_tokens_w_reasoning
+
+        cost = (
+            +pricing.price_per_request * self.requests
+            + pricing.price_per_input_token_without_cached * input_tokens_wo_cached
+            + pricing.price_per_input_token_with_cached * input_tokens_w_cached
+            + (
+                pricing.price_per_output_not_reasoning_token
+                * output_tokens_wo_reasoning
+            )
+            + pricing.price_per_output_reasoning_token * output_tokens_w_reasoning
+        )
+        return cost
