@@ -28,7 +28,9 @@ all = []
 [tool.poetry.group.dev.dependencies]
 black = { extras = ["jupyter"], version = "*" }
 codepress = "*"
+docling = ">=2"
 isort = "*"
+playwright = ">=1"
 poetry-plugin-export = "*"
 pytest = "*"
 pytest-asyncio = "*"
