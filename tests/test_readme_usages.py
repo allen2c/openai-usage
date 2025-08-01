@@ -76,6 +76,10 @@ def test_from_openai_inplace():
     assert usage.output_tokens == 20
     assert usage.total_tokens == 30
 
+    usage.model = "gpt-4o"
+    usage.cost = usage.estimate_cost()
+    print(f"cost: {round(usage.cost, 6)} USD")
+
 
 def test_add_usage():
     usage1 = Usage(requests=1, input_tokens=10, output_tokens=20, total_tokens=30)
