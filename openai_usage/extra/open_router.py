@@ -1,8 +1,12 @@
 import functools
+import logging
+import re
 import typing
 
 import pydantic
 import requests
+
+logger = logging.getLogger(__name__)
 
 MODEL_CONFIG_EXTRA: typing.Literal["forbid", "allow", "ignore"] = "ignore"
 
@@ -13,6 +17,36 @@ def get_models() -> "GetOpenRouterModelsResponse":
     response = requests.get(url)
     response.raise_for_status()
     return GetOpenRouterModelsResponse.model_validate_json(response.text)
+
+
+def get_model(model_name: str) -> typing.Optional["OpenRouterModel"]:
+    all_models = get_models()
+
+    models: list[OpenRouterModel] = []
+    for model in all_models.data:
+        if re.search(f"{model_name}$", model.id, re.IGNORECASE):
+            return model  # Exact match
+        if re.search(model_name, model.id, re.IGNORECASE):
+            models.append(model)
+
+    if len(models) == 1:
+        logger.warning(
+            f"Found model '{models[0].id}' for '{model_name}', "
+            + "the model name is not strict"
+        )
+        return models[0]
+
+    elif len(models) > 1:
+        logger.warning(
+            f"Multiple models found for '{model_name}': "
+            + f"{', '.join(m.id for m in models)}, "
+            + "choose the most not greedy one"
+        )
+        models.sort(key=lambda x: len(x.id.split("/")[-1]))
+        return models[0]
+
+    logger.debug(f"No model found for '{model_name}'")
+    return None
 
 
 class OpenRouterArchitecture(pydantic.BaseModel):
