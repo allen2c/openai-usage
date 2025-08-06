@@ -7,7 +7,7 @@ path = pathlib.Path("openai_usage/models.json")
 
 
 if __name__ == "__main__":
-    models_result = get_models()
+    models_result = get_models(realtime_pricing=True)
     models_result.data.sort(key=lambda x: x.id)
     path.write_text(
         json.dumps(
