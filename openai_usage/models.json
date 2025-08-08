@@ -11141,6 +11141,192 @@
     {
       "architecture": {
         "input_modalities": [
+          "text",
+          "image",
+          "file"
+        ],
+        "instruct_type": null,
+        "modality": "text+image->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "GPT"
+      },
+      "canonical_slug": "openai/gpt-5-2025-08-07",
+      "context_length": 400000,
+      "created": 1754587413,
+      "description": "GPT-5 is OpenAI’s most advanced model, offering major improvements in reasoning, code quality, and user experience. It is optimized for complex tasks that require step-by-step reasoning, instruction following, and accuracy in high-stakes use cases. It supports test-time routing features and advanced prompt understanding, including user-specified intent like \"think hard about this.\" Improvements include reductions in hallucination, sycophancy, and better performance in coding, writing, and health-related tasks.\n\nNote that BYOK is required for this model. Set up here: https://openrouter.ai/settings/integrations",
+      "hugging_face_id": "",
+      "id": "openai/gpt-5",
+      "name": "OpenAI: GPT-5",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0.00001",
+        "image": "0",
+        "input_cache_read": "0.000000125",
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.00000125",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "max_tokens",
+        "response_format",
+        "seed",
+        "structured_outputs",
+        "tool_choice",
+        "tools"
+      ],
+      "top_provider": {
+        "context_length": 400000,
+        "is_moderated": true,
+        "max_completion_tokens": 128000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "file",
+          "image",
+          "text"
+        ],
+        "instruct_type": null,
+        "modality": "text+image->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "GPT"
+      },
+      "canonical_slug": "openai/gpt-5-chat-2025-08-07",
+      "context_length": 400000,
+      "created": 1754587837,
+      "description": "GPT-5 Chat is designed for advanced, natural, multimodal, and context-aware conversations for enterprise applications.",
+      "hugging_face_id": "",
+      "id": "openai/gpt-5-chat",
+      "name": "OpenAI: GPT-5 Chat",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0.00001",
+        "image": "0",
+        "input_cache_read": "0.000000125",
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.00000125",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "max_tokens",
+        "response_format",
+        "seed",
+        "structured_outputs"
+      ],
+      "top_provider": {
+        "context_length": 400000,
+        "is_moderated": true,
+        "max_completion_tokens": 128000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image",
+          "file"
+        ],
+        "instruct_type": null,
+        "modality": "text+image->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "GPT"
+      },
+      "canonical_slug": "openai/gpt-5-mini-2025-08-07",
+      "context_length": 400000,
+      "created": 1754587407,
+      "description": "GPT-5 Mini is a compact version of GPT-5, designed to handle lighter-weight reasoning tasks. It provides the same instruction-following and safety-tuning benefits as GPT-5, but with reduced latency and cost. GPT-5 Mini is the successor to OpenAI's o4-mini model.",
+      "hugging_face_id": "",
+      "id": "openai/gpt-5-mini",
+      "name": "OpenAI: GPT-5 Mini",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0.000002",
+        "image": "0",
+        "input_cache_read": "0.000000025",
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.00000025",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "max_tokens",
+        "response_format",
+        "seed",
+        "structured_outputs",
+        "tool_choice",
+        "tools"
+      ],
+      "top_provider": {
+        "context_length": 400000,
+        "is_moderated": true,
+        "max_completion_tokens": 128000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image",
+          "file"
+        ],
+        "instruct_type": null,
+        "modality": "text+image->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "GPT"
+      },
+      "canonical_slug": "openai/gpt-5-nano-2025-08-07",
+      "context_length": 400000,
+      "created": 1754587402,
+      "description": "GPT-5-Nano is the smallest and fastest variant in the GPT-5 system, optimized for developer tools, rapid interactions, and ultra-low latency environments. While limited in reasoning depth compared to its larger counterparts, it retains key instruction-following and safety features. It is the successor to GPT-4.1-nano and offers a lightweight option for cost-sensitive or real-time applications.",
+      "hugging_face_id": "",
+      "id": "openai/gpt-5-nano",
+      "name": "OpenAI: GPT-5 Nano",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0.0000004",
+        "image": "0",
+        "input_cache_read": "0.000000005",
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.00000005",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "max_tokens",
+        "response_format",
+        "seed",
+        "structured_outputs",
+        "tool_choice",
+        "tools"
+      ],
+      "top_provider": {
+        "context_length": 400000,
+        "is_moderated": true,
+        "max_completion_tokens": 128000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
           "text"
         ],
         "instruct_type": null,
@@ -11156,16 +11342,16 @@
       "description": "gpt-oss-120b is an open-weight, 117B-parameter Mixture-of-Experts (MoE) language model from OpenAI designed for high-reasoning, agentic, and general-purpose production use cases. It activates 5.1B parameters per forward pass and is optimized to run on a single H100 GPU with native MXFP4 quantization. The model supports configurable reasoning depth, full chain-of-thought access, and native tool use, including function calling, browsing, and structured output generation.",
       "hugging_face_id": "openai/gpt-oss-120b",
       "id": "openai/gpt-oss-120b",
-      "name": "OpenAI: GPT OSS 120B",
+      "name": "OpenAI: gpt-oss-120b",
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000005",
+        "completion": "0.00000045",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.0000001",
+        "prompt": "0.00000009",
         "request": "0",
         "web_search": "0"
       },
@@ -11214,16 +11400,16 @@
       "description": "gpt-oss-20b is an open-weight 21B parameter model released by OpenAI under the Apache 2.0 license. It uses a Mixture-of-Experts (MoE) architecture with 3.6B active parameters per forward pass, optimized for lower-latency inference and deployability on consumer or single-GPU hardware. The model is trained in OpenAI’s Harmony response format and supports reasoning level configuration, fine-tuning, and agentic capabilities including function calling, tool use, and structured outputs.",
       "hugging_face_id": "openai/gpt-oss-20b",
       "id": "openai/gpt-oss-20b",
-      "name": "OpenAI: GPT OSS 20B",
+      "name": "OpenAI: gpt-oss-20b",
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000002",
+        "completion": "0.00000016",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000005",
+        "prompt": "0.00000004",
         "request": "0",
         "web_search": "0"
       },
@@ -11233,6 +11419,7 @@
         "logit_bias",
         "logprobs",
         "max_tokens",
+        "min_p",
         "presence_penalty",
         "reasoning",
         "repetition_penalty",
@@ -11250,7 +11437,53 @@
       "top_provider": {
         "context_length": 131072,
         "is_moderated": false,
-        "max_completion_tokens": 32768
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "instruct_type": null,
+        "modality": "text->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "GPT"
+      },
+      "canonical_slug": "openai/gpt-oss-20b",
+      "context_length": 131072,
+      "created": 1754414229,
+      "description": "gpt-oss-20b is an open-weight 21B parameter model released by OpenAI under the Apache 2.0 license. It uses a Mixture-of-Experts (MoE) architecture with 3.6B active parameters per forward pass, optimized for lower-latency inference and deployability on consumer or single-GPU hardware. The model is trained in OpenAI’s Harmony response format and supports reasoning level configuration, fine-tuning, and agentic capabilities including function calling, tool use, and structured outputs.",
+      "hugging_face_id": "openai/gpt-oss-20b",
+      "id": "openai/gpt-oss-20b:free",
+      "name": "OpenAI: gpt-oss-20b (free)",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0",
+        "image": "0",
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "include_reasoning",
+        "max_tokens",
+        "reasoning",
+        "response_format",
+        "structured_outputs",
+        "temperature",
+        "top_p"
+      ],
+      "top_provider": {
+        "context_length": 131072,
+        "is_moderated": false,
+        "max_completion_tokens": 131072
       }
     },
     {
@@ -11786,51 +12019,6 @@
     {
       "architecture": {
         "input_modalities": [
-          "image",
-          "text"
-        ],
-        "instruct_type": null,
-        "modality": "text+image->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
-      "canonical_slug": "openrouter/horizon-beta",
-      "context_length": 256000,
-      "created": 1754089419,
-      "description": "This is a cloaked model provided to the community to gather feedback. This is an improved version of [Horizon Alpha](/openrouter/horizon-alpha)\n\nNote: It’s free to use during this testing period, and prompts and completions are logged by the model creator for feedback and training.",
-      "hugging_face_id": "",
-      "id": "openrouter/horizon-beta",
-      "name": "Horizon Beta",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": "0",
-        "completion": "0",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "max_tokens",
-        "response_format",
-        "structured_outputs",
-        "tool_choice",
-        "tools"
-      ],
-      "top_provider": {
-        "context_length": 256000,
-        "is_moderated": false,
-        "max_completion_tokens": 128000
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
           "text"
         ],
         "instruct_type": "deepseek-r1",
@@ -12258,7 +12446,6 @@
         "response_format",
         "seed",
         "stop",
-        "structured_outputs",
         "temperature",
         "tool_choice",
         "tools",
@@ -13756,6 +13943,49 @@
         "input_modalities": [
           "text"
         ],
+        "instruct_type": null,
+        "modality": "text->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Qwen3"
+      },
+      "canonical_slug": "qwen/qwen3-coder-480b-a35b-07-25",
+      "context_length": 32000,
+      "created": 1753230546,
+      "description": "Qwen3-Coder-480B-A35B-Instruct is a Mixture-of-Experts (MoE) code generation model developed by the Qwen team. It is optimized for agentic coding tasks such as function calling, tool use, and long-context reasoning over repositories. The model features 480 billion total parameters, with 35 billion active per forward pass (8 out of 160 experts).\n\nPricing for the Alibaba endpoints varies by context length. Once a request is greater than 128k input tokens, the higher pricing is used.",
+      "hugging_face_id": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+      "id": "qwen/qwen3-coder:free",
+      "name": "Qwen: Qwen3 Coder  (free)",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0",
+        "image": "0",
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "max_tokens",
+        "seed",
+        "stop",
+        "temperature"
+      ],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": true,
+        "max_completion_tokens": 4000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
         "instruct_type": "qwq",
         "modality": "text->text",
         "output_modalities": [
@@ -14009,55 +14239,6 @@
         "context_length": 32768,
         "is_moderated": false,
         "max_completion_tokens": null
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": "alpaca",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Llama2"
-      },
-      "canonical_slug": "sao10k/fimbulvetr-11b-v2",
-      "context_length": 4096,
-      "created": 1713657600,
-      "description": "Creative writing model, routed with permission. It's fast, it keeps the conversation going, and it stays in character.\n\nIf you submit a raw prompt, you can use Alpaca or Vicuna formats.",
-      "hugging_face_id": "Sao10K/Fimbulvetr-11B-v2",
-      "id": "sao10k/fimbulvetr-11b-v2",
-      "name": "Fimbulvetr 11B v2",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": "0",
-        "completion": "0.0000012",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.0000008",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "max_tokens",
-        "min_p",
-        "presence_penalty",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 4096,
-        "is_moderated": false,
-        "max_completion_tokens": 4096
       }
     },
     {
@@ -15367,55 +15548,6 @@
         "input_modalities": [
           "text"
         ],
-        "instruct_type": "alpaca",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Mistral"
-      },
-      "canonical_slug": "undi95/toppy-m-7b",
-      "context_length": 4096,
-      "created": 1699574400,
-      "description": "A wild 7B parameter model that merges several models using the new task_arithmetic merge method from mergekit.\nList of merged models:\n- NousResearch/Nous-Capybara-7B-V1.9\n- [HuggingFaceH4/zephyr-7b-beta](/models/huggingfaceh4/zephyr-7b-beta)\n- lemonilia/AshhLimaRP-Mistral-7B\n- Vulkane/120-Days-of-Sodom-LoRA-Mistral-7b\n- Undi95/Mistral-pippa-sharegpt-7b-qlora\n\n#merge #uncensored",
-      "hugging_face_id": "Undi95/Toppy-M-7B",
-      "id": "undi95/toppy-m-7b",
-      "name": "Toppy M 7B",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": "0",
-        "completion": "0.0000012",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.0000008",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "max_tokens",
-        "min_p",
-        "presence_penalty",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 4096,
-        "is_moderated": false,
-        "max_completion_tokens": 4096
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
         "instruct_type": null,
         "modality": "text->text",
         "output_modalities": [
@@ -15877,7 +16009,7 @@
         "tokenizer": "Other"
       },
       "canonical_slug": "z-ai/glm-4.5",
-      "context_length": 131072,
+      "context_length": 98304,
       "created": 1753471347,
       "description": "GLM-4.5 is our latest flagship foundation model, purpose-built for agent-based applications. It leverages a Mixture-of-Experts (MoE) architecture and supports a context length of up to 128k tokens. GLM-4.5 delivers significantly enhanced capabilities in reasoning, code generation, and agent alignment. It supports a hybrid inference mode with two options, a \"thinking mode\" designed for complex reasoning and tool use, and a \"non-thinking mode\" optimized for instant responses. Users can control the reasoning behaviour with the `reasoning` `enabled` boolean. [Learn more in our docs](https://openrouter.ai/docs/use-cases/reasoning-tokens#enable-reasoning-with-default-config)",
       "hugging_face_id": "zai-org/GLM-4.5",
@@ -15886,12 +16018,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000002",
+        "completion": "0.000000800064",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.0000002",
+        "prompt": "0.0000001999188",
         "request": "0",
         "web_search": "0"
       },
@@ -15916,7 +16048,7 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 131072,
+        "context_length": 98304,
         "is_moderated": false,
         "max_completion_tokens": null
       }
