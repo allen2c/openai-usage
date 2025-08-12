@@ -53,7 +53,9 @@ def get_model(
         if re.search(model_name, model.id, re.IGNORECASE):
             models.append(model)
         if re.search(
-            model_name.replace(":", "").replace("-", ""), model.id, re.IGNORECASE
+            model_name.replace(":", "").replace("-", ""),
+            model.id.replace(":", "").replace("-", ""),
+            re.IGNORECASE,
         ):
             models.append(model)
 

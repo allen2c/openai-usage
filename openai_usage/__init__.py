@@ -58,9 +58,8 @@ class Usage(pydantic.BaseModel):
     ) -> "Usage":
         """Create Usage from OpenAI usage objects.
 
-        Supports ResponseUsage, RunContextWrapper, agents.Usage, and CompletionUsage types.
-        Returns new instance unless inplace=True.
-        """  # noqa: E501
+        Supports multiple OpenAI usage types and returns a new instance by default.
+        """
 
         if isinstance(openai_usage, ResponseUsage):
             usage = cls(
@@ -146,6 +145,10 @@ class Usage(pydantic.BaseModel):
         realtime_pricing: bool = False,
         ignore_not_found: bool = True,
     ) -> float:
+        """Calculate estimated cost based on usage and model pricing.
+
+        Computes total cost using token counts including cached and reasoning tokens.
+        """
         model = model or self.model
         if model is None:
             logger.warning("No model provided, using 'gpt-4o-mini' as default")
