@@ -144,6 +144,7 @@ class Usage(pydantic.BaseModel):
         model: typing.Union["OpenRouterModel", str, None] = None,
         *,
         realtime_pricing: bool = False,
+        ignore_not_found: bool = True,
     ) -> float:
         model = model or self.model
         if model is None:
@@ -155,7 +156,11 @@ class Usage(pydantic.BaseModel):
 
             might_model = get_model(model, realtime_pricing=realtime_pricing)
             if might_model is None:
-                raise ValueError(f"No model found for '{model}'")
+                if ignore_not_found:
+                    logger.warning(f"No model found for '{model}', returning 0.0 cost")
+                    return 0
+                else:
+                    raise ValueError(f"No model found for '{model}'")
             else:
                 model = might_model
 

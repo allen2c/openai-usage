@@ -52,6 +52,10 @@ def get_model(
             return model  # Exact match
         if re.search(model_name, model.id, re.IGNORECASE):
             models.append(model)
+        if re.search(
+            model_name.replace(":", "").replace("-", ""), model.id, re.IGNORECASE
+        ):
+            models.append(model)
 
     if len(models) == 1:
         logger.warning(
