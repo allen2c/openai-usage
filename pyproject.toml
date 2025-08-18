@@ -12,7 +12,7 @@ license = { text = "MIT" }
 name = "openai-usage"
 readme = "README.md"
 requires-python = ">=3.11,<4"
-version = "0.3.1"
+version = "0.3.2"
 
 [project.urls]
 Homepage = "https://github.com/allen2c/openai-usage"

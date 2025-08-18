@@ -401,12 +401,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000125",
+        "completion": "0.00000625",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00001",
+        "prompt": "0.000005",
         "request": "0",
         "web_search": "0"
       },
@@ -417,8 +417,10 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
+        "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_a",
         "top_k",
@@ -639,12 +641,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.000003",
+        "completion": "0.0000015",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.0000025",
+        "prompt": "0.00000125",
         "request": "0",
         "web_search": "0"
       },
@@ -1566,6 +1568,56 @@
         ],
         "tokenizer": "Other"
       },
+      "canonical_slug": "baidu/ernie-4.5-21b-a3b",
+      "context_length": 120000,
+      "created": 1755034167,
+      "description": "A sophisticated text-based Mixture-of-Experts (MoE) model featuring 21B total parameters with 3B activated per token, delivering exceptional multimodal understanding and generation through heterogeneous MoE structures and modality-isolated routing. Supporting an extensive 131K token context length, the model achieves efficient inference via multi-expert parallel collaboration and quantization, while advanced post-training techniques including SFT, DPO, and UPO ensure optimized performance across diverse applications with specialized routing and balancing losses for superior task handling.",
+      "hugging_face_id": "baidu/ERNIE-4.5-21B-A3B-PT",
+      "id": "baidu/ernie-4.5-21b-a3b",
+      "name": "Baidu: ERNIE 4.5 21B A3B",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0.00000028",
+        "image": "0",
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.00000007",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "frequency_penalty",
+        "logit_bias",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "repetition_penalty",
+        "seed",
+        "stop",
+        "temperature",
+        "top_k",
+        "top_p"
+      ],
+      "top_provider": {
+        "context_length": 120000,
+        "is_moderated": false,
+        "max_completion_tokens": 8000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "text"
+        ],
+        "instruct_type": null,
+        "modality": "text->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other"
+      },
       "canonical_slug": "baidu/ernie-4.5-300b-a47b",
       "context_length": 123000,
       "created": 1751300139,
@@ -1602,6 +1654,112 @@
         "context_length": 123000,
         "is_moderated": false,
         "max_completion_tokens": 12000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "instruct_type": null,
+        "modality": "text+image->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "baidu/ernie-4.5-vl-28b-a3b",
+      "context_length": 30000,
+      "created": 1755032836,
+      "description": "A powerful multimodal Mixture-of-Experts chat model featuring 28B total parameters with 3B activated per token, delivering exceptional text and vision understanding through its innovative heterogeneous MoE structure with modality-isolated routing. Built with scaling-efficient infrastructure for high-throughput training and inference, the model leverages advanced post-training techniques including SFT, DPO, and UPO for optimized performance, while supporting an impressive 131K context length and RLVR alignment for superior cross-modal reasoning and generation capabilities.",
+      "hugging_face_id": "baidu/ERNIE-4.5-VL-28B-A3B-PT",
+      "id": "baidu/ernie-4.5-vl-28b-a3b",
+      "name": "Baidu: ERNIE 4.5 VL 28B A3B",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0.00000056",
+        "image": "0",
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.00000014",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "frequency_penalty",
+        "include_reasoning",
+        "logit_bias",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "reasoning",
+        "repetition_penalty",
+        "seed",
+        "stop",
+        "temperature",
+        "top_k",
+        "top_p"
+      ],
+      "top_provider": {
+        "context_length": 30000,
+        "is_moderated": false,
+        "max_completion_tokens": 8000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "image",
+          "text"
+        ],
+        "instruct_type": null,
+        "modality": "text+image->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "baidu/ernie-4.5-vl-424b-a47b",
+      "context_length": 123000,
+      "created": 1751300903,
+      "description": "ERNIE-4.5-VL-424B-A47B is a multimodal Mixture-of-Experts (MoE) model from Baidu’s ERNIE 4.5 series, featuring 424B total parameters with 47B active per token. It is trained jointly on text and image data using a heterogeneous MoE architecture and modality-isolated routing to enable high-fidelity cross-modal reasoning, image understanding, and long-context generation (up to 131k tokens). Fine-tuned with techniques like SFT, DPO, UPO, and RLVR, this model supports both “thinking” and non-thinking inference modes. Designed for vision-language tasks in English and Chinese, it is optimized for efficient scaling and can operate under 4-bit/8-bit quantization.",
+      "hugging_face_id": "baidu/ERNIE-4.5-VL-424B-A47B-PT",
+      "id": "baidu/ernie-4.5-vl-424b-a47b",
+      "name": "Baidu: ERNIE 4.5 VL 424B A47B ",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0.00000125",
+        "image": "0",
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.00000042",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "frequency_penalty",
+        "include_reasoning",
+        "logit_bias",
+        "max_tokens",
+        "min_p",
+        "presence_penalty",
+        "reasoning",
+        "repetition_penalty",
+        "seed",
+        "stop",
+        "temperature",
+        "top_k",
+        "top_p"
+      ],
+      "top_provider": {
+        "context_length": 123000,
+        "is_moderated": false,
+        "max_completion_tokens": 16000
       }
     },
     {
@@ -2026,7 +2184,7 @@
         "tokenizer": "Other"
       },
       "canonical_slug": "cohere/command-a-03-2025",
-      "context_length": 256000,
+      "context_length": 32768,
       "created": 1741894342,
       "description": "Command A is an open-weights 111B parameter model with a 256k context window focused on delivering great performance across agentic, multilingual, and coding use cases.\nCompared to other leading proprietary and open-weights models Command A delivers maximum performance with minimum hardware costs, excelling on business-critical agentic and multilingual tasks.",
       "hugging_face_id": "CohereForAI/c4ai-command-a-03-2025",
@@ -2035,12 +2193,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.00001",
+        "completion": "0.000008",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.0000025",
+        "prompt": "0.000002",
         "request": "0",
         "web_search": "0"
       },
@@ -2057,9 +2215,9 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 256000,
-        "is_moderated": true,
-        "max_completion_tokens": 8192
+        "context_length": 32768,
+        "is_moderated": false,
+        "max_completion_tokens": null
       }
     },
     {
@@ -3289,51 +3447,6 @@
         "output_modalities": [
           "text"
         ],
-        "tokenizer": "Qwen"
-      },
-      "canonical_slug": "deepseek/deepseek-r1-distill-qwen-7b",
-      "context_length": 131072,
-      "created": 1748628237,
-      "description": "DeepSeek-R1-Distill-Qwen-7B is a 7 billion parameter dense language model distilled from DeepSeek-R1, leveraging reinforcement learning-enhanced reasoning data generated by DeepSeek's larger models. The distillation process transfers advanced reasoning, math, and code capabilities into a smaller, more efficient model architecture based on Qwen2.5-Math-7B. This model demonstrates strong performance across mathematical benchmarks (92.8% pass@1 on MATH-500), coding tasks (Codeforces rating 1189), and general reasoning (49.1% pass@1 on GPQA Diamond), achieving competitive accuracy relative to larger models while maintaining smaller inference costs.",
-      "hugging_face_id": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
-      "id": "deepseek/deepseek-r1-distill-qwen-7b",
-      "name": "DeepSeek: R1 Distill Qwen 7B",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": "0",
-        "completion": "0.0000002",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.0000001",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "include_reasoning",
-        "max_tokens",
-        "reasoning",
-        "seed",
-        "temperature",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 131072,
-        "is_moderated": false,
-        "max_completion_tokens": null
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": "deepseek-r1",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
         "tokenizer": "DeepSeek"
       },
       "canonical_slug": "deepseek/deepseek-r1",
@@ -3621,7 +3734,8 @@
         "input_modalities": [
           "text",
           "image",
-          "file"
+          "file",
+          "audio"
         ],
         "instruct_type": null,
         "modality": "text+image->text",
@@ -3759,6 +3873,7 @@
         "reasoning",
         "response_format",
         "seed",
+        "stop",
         "structured_outputs",
         "temperature",
         "tool_choice",
@@ -3776,7 +3891,8 @@
         "input_modalities": [
           "file",
           "image",
-          "text"
+          "text",
+          "audio"
         ],
         "instruct_type": null,
         "modality": "text+image->text",
@@ -3828,7 +3944,8 @@
         "input_modalities": [
           "file",
           "image",
-          "text"
+          "text",
+          "audio"
         ],
         "instruct_type": null,
         "modality": "text+image->text",
@@ -3930,7 +4047,8 @@
         "input_modalities": [
           "file",
           "image",
-          "text"
+          "text",
+          "audio"
         ],
         "instruct_type": null,
         "modality": "text+image->text",
@@ -3982,7 +4100,8 @@
         "input_modalities": [
           "text",
           "image",
-          "file"
+          "file",
+          "audio"
         ],
         "instruct_type": null,
         "modality": "text+image->text",
@@ -4204,12 +4323,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000008",
+        "completion": "0.00000065",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.0000008",
+        "prompt": "0.00000065",
         "request": "0",
         "web_search": "0"
       },
@@ -4220,7 +4339,9 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
+        "response_format",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_p"
@@ -4228,7 +4349,7 @@
       "top_provider": {
         "context_length": 8192,
         "is_moderated": false,
-        "max_completion_tokens": 2048
+        "max_completion_tokens": null
       }
     },
     {
@@ -4404,7 +4525,7 @@
         "tokenizer": "Gemini"
       },
       "canonical_slug": "google/gemma-3-12b-it",
-      "context_length": 96000,
+      "context_length": 32768,
       "created": 1741902625,
       "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3 12B is the second largest in the family of Gemma 3 models after [Gemma 3 27B](google/gemma-3-27b-it)",
       "hugging_face_id": "google/gemma-3-12b-it",
@@ -4430,17 +4551,15 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
-        "response_format",
         "seed",
         "stop",
-        "structured_outputs",
         "temperature",
         "top_k",
         "top_logprobs",
         "top_p"
       ],
       "top_provider": {
-        "context_length": 96000,
+        "context_length": 32768,
         "is_moderated": false,
         "max_completion_tokens": 8192
       }
@@ -4816,12 +4935,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.000000072",
+        "completion": "0.00000006",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.000000072",
+        "prompt": "0.00000006",
         "request": "0",
         "web_search": "0"
       },
@@ -4835,6 +4954,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_a",
         "top_k",
@@ -4843,7 +4963,7 @@
       "top_provider": {
         "context_length": 4096,
         "is_moderated": false,
-        "max_completion_tokens": 4096
+        "max_completion_tokens": null
       }
     },
     {
@@ -5258,12 +5378,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000015",
+        "completion": "0.00000075",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.0000015",
+        "prompt": "0.00000075",
         "request": "0",
         "web_search": "0"
       },
@@ -5376,7 +5496,6 @@
       "supported_parameters": [
         "frequency_penalty",
         "logit_bias",
-        "logprobs",
         "max_tokens",
         "min_p",
         "presence_penalty",
@@ -5388,7 +5507,6 @@
         "tool_choice",
         "tools",
         "top_k",
-        "top_logprobs",
         "top_p"
       ],
       "top_provider": {
@@ -6334,7 +6452,6 @@
       "supported_parameters": [
         "frequency_penalty",
         "logit_bias",
-        "logprobs",
         "max_tokens",
         "min_p",
         "presence_penalty",
@@ -6344,7 +6461,6 @@
         "stop",
         "temperature",
         "top_k",
-        "top_logprobs",
         "top_p"
       ],
       "top_provider": {
@@ -6620,7 +6736,7 @@
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000007",
+        "prompt": "0.00000006",
         "request": "0",
         "web_search": "0"
       },
@@ -6635,6 +6751,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_logprobs",
@@ -6643,7 +6760,7 @@
       "top_provider": {
         "context_length": 16384,
         "is_moderated": false,
-        "max_completion_tokens": 16384
+        "max_completion_tokens": null
       }
     },
     {
@@ -7583,55 +7700,6 @@
         ],
         "tokenizer": "Mistral"
       },
-      "canonical_slug": "mistralai/mistral-7b-instruct-v0.2",
-      "context_length": 32768,
-      "created": 1703721600,
-      "description": "A high-performing, industry-standard 7.3B parameter model, with optimizations for speed and context length.\n\nAn improved version of [Mistral 7B Instruct](/modelsmistralai/mistral-7b-instruct-v0.1), with the following changes:\n\n- 32k context window (vs 8k context in v0.1)\n- Rope-theta = 1e6\n- No Sliding-Window Attention",
-      "hugging_face_id": "mistralai/Mistral-7B-Instruct-v0.2",
-      "id": "mistralai/mistral-7b-instruct-v0.2",
-      "name": "Mistral: Mistral 7B Instruct v0.2",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": "0",
-        "completion": "0.0000002",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.0000002",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "logit_bias",
-        "max_tokens",
-        "min_p",
-        "presence_penalty",
-        "repetition_penalty",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 32768,
-        "is_moderated": false,
-        "max_completion_tokens": null
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": "mistral",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Mistral"
-      },
       "canonical_slug": "mistralai/mistral-7b-instruct-v0.3",
       "context_length": 32768,
       "created": 1716768000,
@@ -7923,6 +7991,57 @@
       ],
       "top_provider": {
         "context_length": 131072,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "instruct_type": null,
+        "modality": "text+image->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Mistral"
+      },
+      "canonical_slug": "mistralai/mistral-medium-3.1",
+      "context_length": 262144,
+      "created": 1755095639,
+      "description": "Mistral Medium 3.1 is an updated version of Mistral Medium 3, which is a high-performance enterprise-grade language model designed to deliver frontier-level capabilities at significantly reduced operational cost. It balances state-of-the-art reasoning and multimodal performance with 8× lower cost compared to traditional large models, making it suitable for scalable deployments across professional and industrial use cases.\n\nThe model excels in domains such as coding, STEM reasoning, and enterprise adaptation. It supports hybrid, on-prem, and in-VPC deployments and is optimized for integration into custom workflows. Mistral Medium 3.1 offers competitive accuracy relative to larger models like Claude Sonnet 3.5/3.7, Llama 4 Maverick, and Command R+, while maintaining broad compatibility across cloud environments.",
+      "hugging_face_id": "",
+      "id": "mistralai/mistral-medium-3.1",
+      "name": "Mistral: Mistral Medium 3.1",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": "0",
+        "completion": "0.000002",
+        "image": "0",
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.0000004",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "frequency_penalty",
+        "max_tokens",
+        "presence_penalty",
+        "response_format",
+        "seed",
+        "stop",
+        "structured_outputs",
+        "temperature",
+        "tool_choice",
+        "tools",
+        "top_p"
+      ],
+      "top_provider": {
+        "context_length": 262144,
         "is_moderated": false,
         "max_completion_tokens": null
       }
@@ -8371,7 +8490,7 @@
         "tokenizer": "Mistral"
       },
       "canonical_slug": "mistralai/mistral-small-3.2-24b-instruct-2506",
-      "context_length": 131072,
+      "context_length": 128000,
       "created": 1750443016,
       "description": "Mistral-Small-3.2-24B-Instruct-2506 is an updated 24B parameter model from Mistral optimized for instruction following, repetition reduction, and improved function calling. Compared to the 3.1 release, version 3.2 significantly improves accuracy on WildBench and Arena Hard, reduces infinite generations, and delivers gains in tool use and structured output tasks.\n\nIt supports image and text inputs with structured outputs, function/tool calling, and strong performance across coding (HumanEval+, MBPP), STEM (MMLU, MATH, GPQA), and vision benchmarks (ChartQA, DocVQA).",
       "hugging_face_id": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
@@ -8380,12 +8499,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000000800064",
+        "completion": "0.0000001",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000001999188",
+        "prompt": "0.00000005",
         "request": "0",
         "web_search": "0"
       },
@@ -8409,7 +8528,7 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 131072,
+        "context_length": 128000,
         "is_moderated": false,
         "max_completion_tokens": null
       }
@@ -8754,7 +8873,7 @@
       "description": "Kimi-Dev-72B is an open-source large language model fine-tuned for software engineering and issue resolution tasks. Based on Qwen2.5-72B, it is optimized using large-scale reinforcement learning that applies code patches in real repositories and validates them via full test suite execution—rewarding only correct, robust completions. The model achieves 60.4% on SWE-bench Verified, setting a new benchmark among open-source models for software bug fixing and code reasoning.",
       "hugging_face_id": "moonshotai/Kimi-Dev-72B",
       "id": "moonshotai/kimi-dev-72b:free",
-      "name": "Kimi Dev 72b (free)",
+      "name": "MoonshotAI: Kimi Dev 72B (free)",
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
@@ -8919,7 +9038,7 @@
       "description": "Kimi-VL is a lightweight Mixture-of-Experts vision-language model that activates only 2.8B parameters per step while delivering strong performance on multimodal reasoning and long-context tasks. The Kimi-VL-A3B-Thinking variant, fine-tuned with chain-of-thought and reinforcement learning, excels in math and visual reasoning benchmarks like MathVision, MMMU, and MathVista, rivaling much larger models such as Qwen2.5-VL-7B and Gemma-3-12B. It supports 128K context and high-resolution input via its MoonViT encoder.",
       "hugging_face_id": "moonshotai/Kimi-VL-A3B-Thinking",
       "id": "moonshotai/kimi-vl-a3b-thinking",
-      "name": "Moonshot AI: Kimi VL A3B Thinking",
+      "name": "MoonshotAI: Kimi VL A3B Thinking",
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
@@ -8974,7 +9093,7 @@
       "description": "Kimi-VL is a lightweight Mixture-of-Experts vision-language model that activates only 2.8B parameters per step while delivering strong performance on multimodal reasoning and long-context tasks. The Kimi-VL-A3B-Thinking variant, fine-tuned with chain-of-thought and reinforcement learning, excels in math and visual reasoning benchmarks like MathVision, MMMU, and MathVista, rivaling much larger models such as Qwen2.5-VL-7B and Gemma-3-12B. It supports 128K context and high-resolution input via its MoonViT encoder.",
       "hugging_face_id": "moonshotai/Kimi-VL-A3B-Thinking",
       "id": "moonshotai/kimi-vl-a3b-thinking:free",
-      "name": "Moonshot AI: Kimi VL A3B Thinking (free)",
+      "name": "MoonshotAI: Kimi VL A3B Thinking (free)",
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
@@ -9156,7 +9275,7 @@
         "tokenizer": "Llama3"
       },
       "canonical_slug": "neversleep/llama-3.1-lumimaid-8b",
-      "context_length": 40000,
+      "context_length": 32768,
       "created": 1726358400,
       "description": "Lumimaid v0.2 8B is a finetune of [Llama 3.1 8B](/models/meta-llama/llama-3.1-8b-instruct) with a \"HUGE step up dataset wise\" compared to Lumimaid v0.1. Sloppy chats output were purged.\n\nUsage of this model is subject to [Meta's Acceptable Use Policy](https://llama.meta.com/llama3/use-policy/).",
       "hugging_face_id": "NeverSleep/Lumimaid-v0.2-8B",
@@ -9165,12 +9284,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.00000099",
+        "completion": "0.000000625",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000017",
+        "prompt": "0.0000001",
         "request": "0",
         "web_search": "0"
       },
@@ -9181,17 +9300,19 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
+        "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_a",
         "top_k",
         "top_p"
       ],
       "top_provider": {
-        "context_length": 40000,
+        "context_length": 32768,
         "is_moderated": false,
-        "max_completion_tokens": 40000
+        "max_completion_tokens": 2048
       }
     },
     {
@@ -9216,12 +9337,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.000002",
+        "completion": "0.000001",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000125",
+        "prompt": "0.000000625",
         "request": "0",
         "web_search": "0"
       },
@@ -9232,8 +9353,10 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
+        "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_a",
         "top_k",
@@ -9393,6 +9516,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_logprobs",
@@ -9499,6 +9623,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "tool_choice",
         "tools",
@@ -12395,7 +12520,7 @@
         "tokenizer": "Qwen"
       },
       "canonical_slug": "qwen/qwen-2.5-7b-instruct",
-      "context_length": 32768,
+      "context_length": 65536,
       "created": 1729036800,
       "description": "Qwen2.5 7B is the latest series of Qwen large language models. Qwen2.5 brings the following improvements upon Qwen2:\n\n- Significantly more knowledge and has greatly improved capabilities in coding and mathematics, thanks to our specialized expert models in these domains.\n\n- Significant improvements in instruction following, generating long texts (over 8K tokens), understanding structured data (e.g, tables), and generating structured outputs especially JSON. More resilient to the diversity of system prompts, enhancing role-play implementation and condition-setting for chatbots.\n\n- Long-context Support up to 128K tokens and can generate up to 8K tokens.\n\n- Multilingual support for over 29 languages, including Chinese, English, French, Spanish, Portuguese, German, Italian, Russian, Japanese, Korean, Vietnamese, Thai, Arabic, and more.\n\nUsage of this model is subject to [Tongyi Qianwen LICENSE AGREEMENT](https://huggingface.co/Qwen/Qwen1.5-110B-Chat/blob/main/LICENSE).",
       "hugging_face_id": "Qwen/Qwen2.5-7B-Instruct",
@@ -12423,14 +12548,15 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_p"
       ],
       "top_provider": {
-        "context_length": 32768,
+        "context_length": 65536,
         "is_moderated": false,
-        "max_completion_tokens": 16384
+        "max_completion_tokens": null
       }
     },
     {
@@ -12949,7 +13075,7 @@
         "tokenizer": "Qwen"
       },
       "canonical_slug": "qwen/qwen2.5-vl-72b-instruct",
-      "context_length": 32000,
+      "context_length": 32768,
       "created": 1738410311,
       "description": "Qwen2.5-VL is proficient in recognizing common objects such as flowers, birds, fish, and insects. It is also highly capable of analyzing texts, charts, icons, graphics, and layouts within images.",
       "hugging_face_id": "Qwen/Qwen2.5-VL-72B-Instruct",
@@ -12958,12 +13084,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.00000075",
+        "completion": "0.000000400032",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000025",
+        "prompt": "0.0000000999594",
         "request": "0",
         "web_search": "0"
       },
@@ -12983,7 +13109,7 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 32000,
+        "context_length": 32768,
         "is_moderated": false,
         "max_completion_tokens": null
       }
@@ -13082,6 +13208,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "tool_choice",
         "tools",
@@ -13905,6 +14032,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_logprobs",
@@ -14234,7 +14362,7 @@
         "tokenizer": "Llama3"
       },
       "canonical_slug": "sao10k/l3.1-euryale-70b",
-      "context_length": 131072,
+      "context_length": 32768,
       "created": 1724803200,
       "description": "Euryale L3.1 70B v2.2 is a model focused on creative roleplay from [Sao10k](https://ko-fi.com/sao10k). It is the successor of [Euryale L3 70B v2.1](/models/sao10k/l3-euryale-70b).",
       "hugging_face_id": "Sao10K/L3.1-70B-Euryale-v2.2",
@@ -14262,14 +14390,15 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_p"
       ],
       "top_provider": {
-        "context_length": 131072,
+        "context_length": 32768,
         "is_moderated": false,
-        "max_completion_tokens": 16384
+        "max_completion_tokens": null
       }
     },
     {
@@ -14313,6 +14442,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_p"
@@ -14746,7 +14876,7 @@
         "tokenizer": "Llama3"
       },
       "canonical_slug": "thedrummer/anubis-70b-v1.1",
-      "context_length": 131072,
+      "context_length": 16384,
       "created": 1751208347,
       "description": "TheDrummer's Anubis v1.1 is an unaligned, creative Llama 3.3 70B model focused on providing character-driven roleplay & stories. It excels at gritty, visceral prose, unique character adherence, and coherent narratives, while maintaining the instruction following Llama 3.3 70B is known for.",
       "hugging_face_id": "TheDrummer/Anubis-70B-v1.1",
@@ -14755,12 +14885,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000008",
+        "completion": "0.0000007",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.0000005",
+        "prompt": "0.0000004",
         "request": "0",
         "web_search": "0"
       },
@@ -14770,16 +14900,18 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
+        "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_p"
       ],
       "top_provider": {
-        "context_length": 131072,
+        "context_length": 16384,
         "is_moderated": false,
-        "max_completion_tokens": 131072
+        "max_completion_tokens": null
       }
     },
     {
@@ -14925,8 +15057,10 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
+        "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_logprobs",
@@ -14951,7 +15085,7 @@
         "tokenizer": "Mistral"
       },
       "canonical_slug": "thedrummer/unslopnemo-12b",
-      "context_length": 32000,
+      "context_length": 32768,
       "created": 1731103448,
       "description": "UnslopNemo v4.1 is the latest addition from the creator of Rocinante, designed for adventure writing and role-play scenarios.",
       "hugging_face_id": "TheDrummer/UnslopNemo-12B-v4.1",
@@ -14960,12 +15094,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.00000045",
+        "completion": "0.0000004",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000045",
+        "prompt": "0.0000004",
         "request": "0",
         "web_search": "0"
       },
@@ -14988,60 +15122,9 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 32000,
+        "context_length": 32768,
         "is_moderated": false,
-        "max_completion_tokens": 32000
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": null,
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
-      "canonical_slug": "thedrummer/valkyrie-49b-v1",
-      "context_length": 131072,
-      "created": 1748022670,
-      "description": "Built on top of NVIDIA's Llama 3.3 Nemotron Super 49B, Valkyrie is TheDrummer's newest model drop for creative writing.",
-      "hugging_face_id": "TheDrummer/Valkyrie-49B-v1",
-      "id": "thedrummer/valkyrie-49b-v1",
-      "name": "TheDrummer: Valkyrie 49B V1",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": "0",
-        "completion": "0.000001",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.00000065",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "include_reasoning",
-        "max_tokens",
-        "min_p",
-        "presence_penalty",
-        "reasoning",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 131072,
-        "is_moderated": false,
-        "max_completion_tokens": 131072
+        "max_completion_tokens": null
       }
     },
     {
@@ -15175,60 +15258,6 @@
         "input_cache_write": null,
         "internal_reasoning": "0",
         "prompt": "0.00000001999188",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "include_reasoning",
-        "logit_bias",
-        "logprobs",
-        "max_tokens",
-        "min_p",
-        "presence_penalty",
-        "reasoning",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_logprobs",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 32768,
-        "is_moderated": false,
-        "max_completion_tokens": null
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": "deepseek-r1",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
-      "canonical_slug": "thudm/glm-z1-32b-0414",
-      "context_length": 32768,
-      "created": 1744924148,
-      "description": "GLM-Z1-32B-0414 is an enhanced reasoning variant of GLM-4-32B, built for deep mathematical, logical, and code-oriented problem solving. It applies extended reinforcement learning—both task-specific and general pairwise preference-based—to improve performance on complex multi-step tasks. Compared to the base GLM-4-32B model, Z1 significantly boosts capabilities in structured reasoning and formal domains.\n\nThe model supports enforced “thinking” steps via prompt engineering and offers improved coherence for long-form outputs. It’s optimized for use in agentic workflows, and includes support for long context (via YaRN), JSON tool calling, and fine-grained sampling configuration for stable inference. Ideal for use cases requiring deliberate, multi-step reasoning or formal derivations.",
-      "hugging_face_id": "THUDM/GLM-Z1-32B-0414",
-      "id": "thudm/glm-z1-32b:free",
-      "name": "THUDM: GLM Z1 32B (free)",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": "0",
-        "completion": "0",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0",
         "request": "0",
         "web_search": "0"
       },
@@ -15439,12 +15468,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000015",
+        "completion": "0.00000075",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.000001",
+        "prompt": "0.0000005",
         "request": "0",
         "web_search": "0"
       },
@@ -15455,8 +15484,10 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
+        "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_a",
         "top_k",
@@ -16020,6 +16051,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "tool_choice",
         "tools",
@@ -16111,12 +16143,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000018",
+        "completion": "0.0000017",
         "image": "0",
-        "input_cache_read": "0.00000011",
+        "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.0000006",
+        "prompt": "0.0000005",
         "request": "0",
         "web_search": "0"
       },
@@ -16129,6 +16161,7 @@
         "presence_penalty",
         "reasoning",
         "repetition_penalty",
+        "response_format",
         "seed",
         "stop",
         "temperature",
@@ -16140,7 +16173,7 @@
       "top_provider": {
         "context_length": 65536,
         "is_moderated": false,
-        "max_completion_tokens": 16384
+        "max_completion_tokens": 65536
       }
     }
   ]
