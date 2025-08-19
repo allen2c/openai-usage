@@ -1024,54 +1024,6 @@
       "created": 1740422110,
       "description": "Claude 3.7 Sonnet is an advanced large language model with improved reasoning, coding, and problem-solving capabilities. It introduces a hybrid reasoning approach, allowing users to choose between rapid responses and extended, step-by-step processing for complex tasks. The model demonstrates notable improvements in coding, particularly in front-end development and full-stack updates, and excels in agentic workflows, where it can autonomously navigate multi-step processes. \n\nClaude 3.7 Sonnet maintains performance parity with its predecessor in standard mode while offering an extended reasoning mode for enhanced accuracy in math, coding, and instruction-following tasks.\n\nRead more at the [blog post here](https://www.anthropic.com/news/claude-3-7-sonnet)",
       "hugging_face_id": "",
-      "id": "anthropic/claude-3.7-sonnet:beta",
-      "name": "Anthropic: Claude 3.7 Sonnet (self-moderated)",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": "0",
-        "completion": "0.000015",
-        "image": "0.0048",
-        "input_cache_read": "0.0000003",
-        "input_cache_write": "0.00000375",
-        "internal_reasoning": "0",
-        "prompt": "0.000003",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "include_reasoning",
-        "max_tokens",
-        "reasoning",
-        "stop",
-        "temperature",
-        "tool_choice",
-        "tools"
-      ],
-      "top_provider": {
-        "context_length": 200000,
-        "is_moderated": false,
-        "max_completion_tokens": 128000
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text",
-          "image",
-          "file"
-        ],
-        "instruct_type": null,
-        "modality": "text+image->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Claude"
-      },
-      "canonical_slug": "anthropic/claude-3-7-sonnet-20250219",
-      "context_length": 200000,
-      "created": 1740422110,
-      "description": "Claude 3.7 Sonnet is an advanced large language model with improved reasoning, coding, and problem-solving capabilities. It introduces a hybrid reasoning approach, allowing users to choose between rapid responses and extended, step-by-step processing for complex tasks. The model demonstrates notable improvements in coding, particularly in front-end development and full-stack updates, and excels in agentic workflows, where it can autonomously navigate multi-step processes. \n\nClaude 3.7 Sonnet maintains performance parity with its predecessor in standard mode while offering an extended reasoning mode for enhanced accuracy in math, coding, and instruction-following tasks.\n\nRead more at the [blog post here](https://www.anthropic.com/news/claude-3-7-sonnet)",
-      "hugging_face_id": "",
       "id": "anthropic/claude-3.7-sonnet:thinking",
       "name": "Anthropic: Claude 3.7 Sonnet (thinking)",
       "per_request_limits": null,
@@ -4607,6 +4559,7 @@
         "response_format",
         "seed",
         "stop",
+        "structured_outputs",
         "temperature",
         "top_k",
         "top_logprobs",
@@ -11323,7 +11276,7 @@
         "tokenizer": "GPT"
       },
       "canonical_slug": "openai/gpt-oss-120b",
-      "context_length": 131072,
+      "context_length": 131000,
       "created": 1754414231,
       "description": "gpt-oss-120b is an open-weight, 117B-parameter Mixture-of-Experts (MoE) language model from OpenAI designed for high-reasoning, agentic, and general-purpose production use cases. It activates 5.1B parameters per forward pass and is optimized to run on a single H100 GPU with native MXFP4 quantization. The model supports configurable reasoning depth, full chain-of-thought access, and native tool use, including function calling, browsing, and structured output generation.",
       "hugging_face_id": "openai/gpt-oss-120b",
@@ -11332,12 +11285,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.0000002903936",
+        "completion": "0.00000028",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000007256312",
+        "prompt": "0.000000072",
         "request": "0",
         "web_search": "0"
       },
@@ -11363,9 +11316,9 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 131072,
+        "context_length": 131000,
         "is_moderated": false,
-        "max_completion_tokens": null
+        "max_completion_tokens": 131000
       }
     },
     {
@@ -11381,7 +11334,7 @@
         "tokenizer": "GPT"
       },
       "canonical_slug": "openai/gpt-oss-20b",
-      "context_length": 131072,
+      "context_length": 131000,
       "created": 1754414229,
       "description": "gpt-oss-20b is an open-weight 21B parameter model released by OpenAI under the Apache 2.0 license. It uses a Mixture-of-Experts (MoE) architecture with 3.6B active parameters per forward pass, optimized for lower-latency inference and deployability on consumer or single-GPU hardware. The model is trained in OpenAI’s Harmony response format and supports reasoning level configuration, fine-tuning, and agentic capabilities including function calling, tool use, and structured outputs.",
       "hugging_face_id": "openai/gpt-oss-20b",
@@ -11390,7 +11343,7 @@
       "per_request_limits": null,
       "pricing": {
         "audio": "0",
-        "completion": "0.00000016",
+        "completion": "0.00000015",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
@@ -11421,9 +11374,9 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 131072,
+        "context_length": 131000,
         "is_moderated": false,
-        "max_completion_tokens": null
+        "max_completion_tokens": 131000
       }
     },
     {
@@ -15965,7 +15918,7 @@
         "tokenizer": "Other"
       },
       "canonical_slug": "z-ai/glm-4.5",
-      "context_length": 98304,
+      "context_length": 131072,
       "created": 1753471347,
       "description": "GLM-4.5 is our latest flagship foundation model, purpose-built for agent-based applications. It leverages a Mixture-of-Experts (MoE) architecture and supports a context length of up to 128k tokens. GLM-4.5 delivers significantly enhanced capabilities in reasoning, code generation, and agent alignment. It supports a hybrid inference mode with two options, a \"thinking mode\" designed for complex reasoning and tool use, and a \"non-thinking mode\" optimized for instant responses. Users can control the reasoning behaviour with the `reasoning` `enabled` boolean. [Learn more in our docs](https://openrouter.ai/docs/use-cases/reasoning-tokens#enable-reasoning-with-default-config)",
       "hugging_face_id": "zai-org/GLM-4.5",
@@ -16004,7 +15957,7 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 98304,
+        "context_length": 131072,
         "is_moderated": false,
         "max_completion_tokens": null
       }
