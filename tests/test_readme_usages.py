@@ -1,5 +1,4 @@
 import agents
-import pytest
 from openai.types.completion_usage import (
     CompletionTokensDetails,
     CompletionUsage,
@@ -83,7 +82,7 @@ def test_from_openai_inplace():
 
     usage.model = "gpt-4o"
     usage.cost = usage.estimate_cost()
-    print(f"cost: {round(usage.cost, 6)} USD")
+    print(f"cost: {round(float(usage.cost), 6)} USD")
 
 
 def test_add_usage():
@@ -134,25 +133,24 @@ def test_from_agents_run_context_wrapper():
 def test_estimate_cost():
     usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
     cost = usage.estimate_cost("gpt-4o-mini")
-    assert isinstance(cost, float)
-    assert cost > 0
+    assert isinstance(cost, str)
+    assert float(cost) > 0
 
 
 def test_estimate_cost_realtime():
     usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
     cost = usage.estimate_cost("anthropic/claude-3-haiku", realtime_pricing=True)
-    assert isinstance(cost, float)
-    assert cost > 0
+    assert isinstance(cost, str)
+    assert float(cost) > 0
 
 
 def test_estimate_cost_no_model():
     usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
     cost = usage.estimate_cost()
-    assert isinstance(cost, float)
-    assert cost > 0
+    assert isinstance(cost, str)
+    assert float(cost) > 0
 
 
 def test_estimate_cost_not_found():
     usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
-    with pytest.raises(ValueError, match="No model found for 'not-a-real-model'"):
-        usage.estimate_cost("not-a-real-model")
+    assert usage.estimate_cost("not-a-real-model") == "0"

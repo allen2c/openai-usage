@@ -1,3 +1,4 @@
+import decimal
 import functools
 import logging
 import pathlib
@@ -107,27 +108,27 @@ class OpenRouterPricing(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
 
     @property
-    def price_per_request(self) -> float:
-        return float(self.request or 0)
+    def price_per_request(self) -> decimal.Decimal:
+        return decimal.Decimal(self.request or 0)
 
     @property
-    def price_per_input_token_without_cached(self) -> float:
-        return float(self.prompt or 0)
+    def price_per_input_token_without_cached(self) -> decimal.Decimal:
+        return decimal.Decimal(self.prompt or 0)
 
     @property
-    def price_per_input_token_with_cached(self) -> float:
+    def price_per_input_token_with_cached(self) -> decimal.Decimal:
         return (
-            float(self.input_cache_read or 0)
+            decimal.Decimal(self.input_cache_read or 0)
             or self.price_per_input_token_without_cached
         )
 
     @property
-    def price_per_output_not_reasoning_token(self) -> float:
-        return float(self.completion or 0)
+    def price_per_output_not_reasoning_token(self) -> decimal.Decimal:
+        return decimal.Decimal(self.completion or 0)
 
     @property
-    def price_per_output_reasoning_token(self) -> float:
-        return float(self.internal_reasoning or 0)
+    def price_per_output_reasoning_token(self) -> decimal.Decimal:
+        return decimal.Decimal(self.internal_reasoning or 0)
 
 
 class OpenRouterTopProvider(pydantic.BaseModel):

@@ -4,6 +4,7 @@
 Simple models for tracking and aggregating OpenAI API usage data.
 """
 
+import decimal
 import logging
 import pathlib
 import typing
@@ -45,7 +46,7 @@ class Usage(pydantic.BaseModel):
 
     # Extra fields from OpenAI schema
     model: str | None = None
-    cost: float | None = None
+    cost: str | float | None = None
 
     @classmethod
     def from_openai(
@@ -144,7 +145,7 @@ class Usage(pydantic.BaseModel):
         *,
         realtime_pricing: bool = False,
         ignore_not_found: bool = True,
-    ) -> float:
+    ) -> str:
         """Calculate estimated cost based on usage and model pricing.
 
         Computes total cost using token counts including cached and reasoning tokens.
@@ -161,7 +162,7 @@ class Usage(pydantic.BaseModel):
             if might_model is None:
                 if ignore_not_found:
                     logger.warning(f"No model found for '{model}', returning 0.0 cost")
-                    return 0
+                    return str(decimal.Decimal(0))
                 else:
                     raise ValueError(f"No model found for '{model}'")
             else:
@@ -185,4 +186,4 @@ class Usage(pydantic.BaseModel):
             )
             + pricing.price_per_output_reasoning_token * output_tokens_w_reasoning
         )
-        return cost
+        return str(cost)
