@@ -145,6 +145,21 @@ class Usage(pydantic.BaseModel):
         *,
         realtime_pricing: bool = False,
         ignore_not_found: bool = True,
+    ) -> float:
+        return float(
+            self.estimate_cost_str(
+                model,
+                realtime_pricing=realtime_pricing,
+                ignore_not_found=ignore_not_found,
+            )
+        )
+
+    def estimate_cost_str(
+        self,
+        model: typing.Union["OpenRouterModel", str, None] = None,
+        *,
+        realtime_pricing: bool = False,
+        ignore_not_found: bool = True,
     ) -> str:
         """Calculate estimated cost based on usage and model pricing.
 
