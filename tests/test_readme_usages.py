@@ -132,25 +132,25 @@ def test_from_agents_run_context_wrapper():
 
 def test_estimate_cost():
     usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
-    cost = usage.estimate_cost("gpt-4o-mini")
+    cost = usage.estimate_cost_str("gpt-4o-mini")
     assert isinstance(cost, str)
     assert float(cost) > 0
 
 
 def test_estimate_cost_realtime():
     usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
-    cost = usage.estimate_cost("anthropic/claude-3-haiku", realtime_pricing=True)
+    cost = usage.estimate_cost_str("anthropic/claude-3-haiku", realtime_pricing=True)
     assert isinstance(cost, str)
     assert float(cost) > 0
 
 
 def test_estimate_cost_no_model():
     usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
-    cost = usage.estimate_cost()
+    cost = usage.estimate_cost_str()
     assert isinstance(cost, str)
     assert float(cost) > 0
 
 
 def test_estimate_cost_not_found():
     usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
-    assert usage.estimate_cost("not-a-real-model") == "0"
+    assert usage.estimate_cost("not-a-real-model") == 0.0
