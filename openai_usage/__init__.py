@@ -47,6 +47,7 @@ class Usage(pydantic.BaseModel):
     # Extra fields from OpenAI schema
     model: str | None = None
     cost: str | float | None = None
+    annotations: str | None = None
 
     @classmethod
     def from_openai(
