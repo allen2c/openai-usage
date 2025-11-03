@@ -27,6 +27,9 @@ update:
 	poetry export --without-hashes -f requirements.txt --output requirements.txt
 	poetry export --without-hashes -f requirements.txt --output requirements-all.txt --all-extras --all-groups
 
+fetch-models:
+	PYTHONPATH=. python scripts/fetch_models_to_local.py
+
 # Docs
 mkdocs:
 	mkdocs serve -a 0.0.0.0:8000

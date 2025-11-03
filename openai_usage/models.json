@@ -689,6 +689,52 @@
         ],
         "tokenizer": "Nova"
       },
+      "canonical_slug": "amazon/nova-premier-v1",
+      "context_length": 1000000,
+      "created": 1761950332,
+      "description": "Amazon Nova Premier is the most capable of Amazon’s multimodal models for complex reasoning tasks and for use as the best teacher for distilling custom models.",
+      "hugging_face_id": "",
+      "id": "amazon/nova-premier-v1",
+      "name": "Amazon: Nova Premier 1.0",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0.0000125",
+        "image": "0",
+        "input_cache_read": "0.000000625",
+        "input_cache_write": null,
+        "internal_reasoning": "0",
+        "prompt": "0.0000025",
+        "request": "0",
+        "web_search": "0"
+      },
+      "supported_parameters": [
+        "max_tokens",
+        "stop",
+        "temperature",
+        "tools",
+        "top_k",
+        "top_p"
+      ],
+      "top_provider": {
+        "context_length": 1000000,
+        "is_moderated": true,
+        "max_completion_tokens": 32000
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": [
+          "text",
+          "image"
+        ],
+        "instruct_type": null,
+        "modality": "text+image->text",
+        "output_modalities": [
+          "text"
+        ],
+        "tokenizer": "Nova"
+      },
       "canonical_slug": "amazon/nova-pro-v1",
       "context_length": 300000,
       "created": 1733436303,
@@ -720,56 +766,6 @@
         "context_length": 300000,
         "is_moderated": true,
         "max_completion_tokens": 5120
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": "chatml",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Qwen"
-      },
-      "canonical_slug": "anthracite-org/magnum-v2-72b",
-      "context_length": 32768,
-      "created": 1727654400,
-      "description": "From the maker of [Goliath](https://openrouter.ai/models/alpindale/goliath-120b), Magnum 72B is the seventh in a family of models designed to achieve the prose quality of the Claude 3 models, notably Opus & Sonnet.\n\nThe model is based on [Qwen2 72B](https://openrouter.ai/models/qwen/qwen-2-72b-instruct) and trained with 55 million tokens of highly curated roleplay (RP) data.",
-      "hugging_face_id": "anthracite-org/magnum-v2-72b",
-      "id": "anthracite-org/magnum-v2-72b",
-      "name": "Magnum v2 72B",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0.000003",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.000003",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "logit_bias",
-        "max_tokens",
-        "min_p",
-        "presence_penalty",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 32768,
-        "is_moderated": false,
-        "max_completion_tokens": null
       }
     },
     {
@@ -1201,7 +1197,8 @@
         "stop",
         "temperature",
         "tool_choice",
-        "tools"
+        "tools",
+        "top_p"
       ],
       "top_provider": {
         "context_length": 200000,
@@ -2153,104 +2150,6 @@
         "response_format",
         "stop",
         "structured_outputs",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 32768,
-        "is_moderated": false,
-        "max_completion_tokens": null
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": null,
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
-      "canonical_slug": "cognitivecomputations/dolphin3.0-mistral-24b",
-      "context_length": 32768,
-      "created": 1739462019,
-      "description": "Dolphin 3.0 is the next generation of the Dolphin series of instruct-tuned models.  Designed to be the ultimate general purpose local model, enabling coding, math, agentic, function calling, and general use cases.\n\nDolphin aims to be a general purpose instruct model, similar to the models behind ChatGPT, Claude, Gemini. \n\nPart of the [Dolphin 3.0 Collection](https://huggingface.co/collections/cognitivecomputations/dolphin-30-677ab47f73d7ff66743979a3) Curated and trained by [Eric Hartford](https://huggingface.co/ehartford), [Ben Gitter](https://huggingface.co/bigstorm), [BlouseJury](https://huggingface.co/BlouseJury) and [Cognitive Computations](https://huggingface.co/cognitivecomputations)",
-      "hugging_face_id": "cognitivecomputations/Dolphin3.0-Mistral-24B",
-      "id": "cognitivecomputations/dolphin3.0-mistral-24b",
-      "name": "Dolphin3.0 Mistral 24B",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0.00000017",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.00000004",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "max_tokens",
-        "presence_penalty",
-        "repetition_penalty",
-        "response_format",
-        "seed",
-        "stop",
-        "structured_outputs",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 32768,
-        "is_moderated": false,
-        "max_completion_tokens": 32768
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": null,
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
-      "canonical_slug": "cognitivecomputations/dolphin3.0-mistral-24b",
-      "context_length": 32768,
-      "created": 1739462019,
-      "description": "Dolphin 3.0 is the next generation of the Dolphin series of instruct-tuned models.  Designed to be the ultimate general purpose local model, enabling coding, math, agentic, function calling, and general use cases.\n\nDolphin aims to be a general purpose instruct model, similar to the models behind ChatGPT, Claude, Gemini. \n\nPart of the [Dolphin 3.0 Collection](https://huggingface.co/collections/cognitivecomputations/dolphin-30-677ab47f73d7ff66743979a3) Curated and trained by [Eric Hartford](https://huggingface.co/ehartford), [Ben Gitter](https://huggingface.co/bigstorm), [BlouseJury](https://huggingface.co/BlouseJury) and [Cognitive Computations](https://huggingface.co/cognitivecomputations)",
-      "hugging_face_id": "cognitivecomputations/Dolphin3.0-Mistral-24B",
-      "id": "cognitivecomputations/dolphin3.0-mistral-24b:free",
-      "name": "Dolphin3.0 Mistral 24B (free)",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "max_tokens",
-        "presence_penalty",
-        "repetition_penalty",
-        "seed",
-        "stop",
         "temperature",
         "top_k",
         "top_p"
@@ -4474,12 +4373,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": null,
-        "completion": "0.00000003",
+        "completion": "0.00000009",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000001",
+        "prompt": "0.00000003",
         "request": "0",
         "web_search": "0"
       },
@@ -4488,10 +4387,6 @@
         "max_tokens",
         "presence_penalty",
         "repetition_penalty",
-        "response_format",
-        "seed",
-        "stop",
-        "structured_outputs",
         "temperature",
         "top_k",
         "top_p"
@@ -4499,55 +4394,7 @@
       "top_provider": {
         "context_length": 8192,
         "is_moderated": false,
-        "max_completion_tokens": 8192
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": "gemma",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Gemini"
-      },
-      "canonical_slug": "google/gemma-2-9b-it",
-      "context_length": 8192,
-      "created": 1719532800,
-      "description": "Gemma 2 9B by Google is an advanced, open-source language model that sets a new standard for efficiency and performance in its size class.\n\nDesigned for a wide variety of tasks, it empowers developers and researchers to build innovative applications, while maintaining accessibility, safety, and cost-effectiveness.\n\nSee the [launch announcement](https://blog.google/technology/developers/google-gemma-2/) for more details. Usage of Gemma is subject to Google's [Gemma Terms of Use](https://ai.google.dev/gemma/terms).",
-      "hugging_face_id": "google/gemma-2-9b-it",
-      "id": "google/gemma-2-9b-it:free",
-      "name": "Google: Gemma 2 9B (free)",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "max_tokens",
-        "presence_penalty",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 8192,
-        "is_moderated": false,
-        "max_completion_tokens": 8192
+        "max_completion_tokens": null
       }
     },
     {
@@ -6398,7 +6245,6 @@
       "supported_parameters": [
         "frequency_penalty",
         "logit_bias",
-        "logprobs",
         "max_tokens",
         "min_p",
         "presence_penalty",
@@ -6411,7 +6257,6 @@
         "tool_choice",
         "tools",
         "top_k",
-        "top_logprobs",
         "top_p"
       ],
       "top_provider": {
@@ -7580,7 +7425,7 @@
         "tokenizer": "Mistral"
       },
       "canonical_slug": "mistralai/devstral-small-2505",
-      "context_length": 131072,
+      "context_length": 128000,
       "created": 1747837379,
       "description": "Devstral-Small-2505 is a 24B parameter agentic LLM fine-tuned from Mistral-Small-3.1, jointly developed by Mistral AI and All Hands AI for advanced software engineering tasks. It is optimized for codebase exploration, multi-file editing, and integration into coding agents, achieving state-of-the-art results on SWE-Bench Verified (46.8%).\n\nDevstral supports a 128k context window and uses a custom Tekken tokenizer. It is text-only, with the vision encoder removed, and is suitable for local deployment on high-end consumer hardware (e.g., RTX 4090, 32GB RAM Macs). Devstral is best used in agentic workflows via the OpenHands scaffold and is compatible with inference frameworks like vLLM, Transformers, and Ollama. It is released under the Apache 2.0 license.",
       "hugging_face_id": "mistralai/Devstral-Small-2505",
@@ -7589,12 +7434,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": null,
-        "completion": "0.00000022",
+        "completion": "0.00000012",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000005",
+        "prompt": "0.00000006",
         "request": "0",
         "web_search": "0"
       },
@@ -7615,57 +7460,7 @@
         "top_p"
       ],
       "top_provider": {
-        "context_length": 131072,
-        "is_moderated": false,
-        "max_completion_tokens": 131072
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": null,
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Mistral"
-      },
-      "canonical_slug": "mistralai/devstral-small-2505",
-      "context_length": 32768,
-      "created": 1747837379,
-      "description": "Devstral-Small-2505 is a 24B parameter agentic LLM fine-tuned from Mistral-Small-3.1, jointly developed by Mistral AI and All Hands AI for advanced software engineering tasks. It is optimized for codebase exploration, multi-file editing, and integration into coding agents, achieving state-of-the-art results on SWE-Bench Verified (46.8%).\n\nDevstral supports a 128k context window and uses a custom Tekken tokenizer. It is text-only, with the vision encoder removed, and is suitable for local deployment on high-end consumer hardware (e.g., RTX 4090, 32GB RAM Macs). Devstral is best used in agentic workflows via the OpenHands scaffold and is compatible with inference frameworks like vLLM, Transformers, and Ollama. It is released under the Apache 2.0 license.",
-      "hugging_face_id": "mistralai/Devstral-Small-2505",
-      "id": "mistralai/devstral-small-2505:free",
-      "name": "Mistral: Devstral Small 2505 (free)",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "max_tokens",
-        "presence_penalty",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "tool_choice",
-        "tools",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 32768,
+        "context_length": 128000,
         "is_moderated": false,
         "max_completion_tokens": null
       }
@@ -9324,56 +9119,6 @@
         ],
         "tokenizer": "Other"
       },
-      "canonical_slug": "moonshotai/kimi-dev-72b",
-      "context_length": 131072,
-      "created": 1750115909,
-      "description": "Kimi-Dev-72B is an open-source large language model fine-tuned for software engineering and issue resolution tasks. Based on Qwen2.5-72B, it is optimized using large-scale reinforcement learning that applies code patches in real repositories and validates them via full test suite execution—rewarding only correct, robust completions. The model achieves 60.4% on SWE-bench Verified, setting a new benchmark among open-source models for software bug fixing and code reasoning.",
-      "hugging_face_id": "moonshotai/Kimi-Dev-72B",
-      "id": "moonshotai/kimi-dev-72b:free",
-      "name": "MoonshotAI: Kimi Dev 72B (free)",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "include_reasoning",
-        "max_tokens",
-        "presence_penalty",
-        "reasoning",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 131072,
-        "is_moderated": false,
-        "max_completion_tokens": null
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": null,
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
       "canonical_slug": "moonshotai/kimi-k2",
       "context_length": 63000,
       "created": 1752263252,
@@ -9396,7 +9141,6 @@
       "supported_parameters": [
         "frequency_penalty",
         "logit_bias",
-        "logprobs",
         "max_tokens",
         "min_p",
         "presence_penalty",
@@ -9409,7 +9153,6 @@
         "tool_choice",
         "tools",
         "top_k",
-        "top_logprobs",
         "top_p"
       ],
       "top_provider": {
@@ -9757,106 +9500,6 @@
       ],
       "top_provider": {
         "context_length": 4096,
-        "is_moderated": false,
-        "max_completion_tokens": null
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": null,
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
-      "canonical_slug": "nousresearch/deephermes-3-llama-3-8b-preview",
-      "context_length": 131072,
-      "created": 1740719372,
-      "description": "DeepHermes 3 Preview is the latest version of our flagship Hermes series of LLMs by Nous Research, and one of the first models in the world to unify Reasoning (long chains of thought that improve answer accuracy) and normal LLM response modes into one model. We have also improved LLM annotation, judgement, and function calling.\n\nDeepHermes 3 Preview is one of the first LLM models to unify both \"intuitive\", traditional mode responses and long chain of thought reasoning responses into a single model, toggled by a system prompt.",
-      "hugging_face_id": "NousResearch/DeepHermes-3-Llama-3-8B-Preview",
-      "id": "nousresearch/deephermes-3-llama-3-8b-preview",
-      "name": "Nous: DeepHermes 3 Llama 3 8B Preview",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0.00000011",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.00000003",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "max_tokens",
-        "presence_penalty",
-        "repetition_penalty",
-        "response_format",
-        "seed",
-        "stop",
-        "structured_outputs",
-        "temperature",
-        "tool_choice",
-        "tools",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 131072,
-        "is_moderated": false,
-        "max_completion_tokens": 131072
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": null,
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
-      "canonical_slug": "nousresearch/deephermes-3-llama-3-8b-preview",
-      "context_length": 131072,
-      "created": 1740719372,
-      "description": "DeepHermes 3 Preview is the latest version of our flagship Hermes series of LLMs by Nous Research, and one of the first models in the world to unify Reasoning (long chains of thought that improve answer accuracy) and normal LLM response modes into one model. We have also improved LLM annotation, judgement, and function calling.\n\nDeepHermes 3 Preview is one of the first LLM models to unify both \"intuitive\", traditional mode responses and long chain of thought reasoning responses into a single model, toggled by a system prompt.",
-      "hugging_face_id": "NousResearch/DeepHermes-3-Llama-3-8B-Preview",
-      "id": "nousresearch/deephermes-3-llama-3-8b-preview:free",
-      "name": "Nous: DeepHermes 3 Llama 3 8B Preview (free)",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "max_tokens",
-        "presence_penalty",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 131072,
         "is_moderated": false,
         "max_completion_tokens": null
       }
@@ -10257,7 +9900,6 @@
       },
       "supported_parameters": [
         "frequency_penalty",
-        "logit_bias",
         "max_tokens",
         "min_p",
         "presence_penalty",
@@ -14741,12 +14383,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": null,
-        "completion": "0.00000029",
+        "completion": "0.0000003",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000008",
+        "prompt": "0.00000009",
         "request": "0",
         "web_search": "0"
       },
@@ -14759,7 +14401,6 @@
         "repetition_penalty",
         "response_format",
         "seed",
-        "stop",
         "structured_outputs",
         "temperature",
         "tool_choice",
@@ -14770,7 +14411,7 @@
       "top_provider": {
         "context_length": 262144,
         "is_moderated": false,
-        "max_completion_tokens": 262144
+        "max_completion_tokens": 131072
       }
     },
     {
@@ -14987,56 +14628,6 @@
         "context_length": 128000,
         "is_moderated": false,
         "max_completion_tokens": 20000
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": "qwen3",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Qwen3"
-      },
-      "canonical_slug": "qwen/qwen3-8b-04-28",
-      "context_length": 40960,
-      "created": 1745876632,
-      "description": "Qwen3-8B is a dense 8.2B parameter causal language model from the Qwen3 series, designed for both reasoning-heavy tasks and efficient dialogue. It supports seamless switching between \"thinking\" mode for math, coding, and logical inference, and \"non-thinking\" mode for general conversation. The model is fine-tuned for instruction-following, agent integration, creative writing, and multilingual use across 100+ languages and dialects. It natively supports a 32K token context window and can extend to 131K tokens with YaRN scaling.",
-      "hugging_face_id": "Qwen/Qwen3-8B",
-      "id": "qwen/qwen3-8b:free",
-      "name": "Qwen: Qwen3 8B (free)",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "include_reasoning",
-        "max_tokens",
-        "presence_penalty",
-        "reasoning",
-        "repetition_penalty",
-        "seed",
-        "stop",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 40960,
-        "is_moderated": false,
-        "max_completion_tokens": 40960
       }
     },
     {
@@ -16710,12 +16301,12 @@
       "per_request_limits": null,
       "pricing": {
         "audio": null,
-        "completion": "0.00000033",
+        "completion": "0.0000008",
         "image": "0",
         "input_cache_read": null,
         "input_cache_write": null,
         "internal_reasoning": "0",
-        "prompt": "0.00000008",
+        "prompt": "0.0000005",
         "request": "0",
         "web_search": "0"
       },
@@ -16726,10 +16317,8 @@
         "min_p",
         "presence_penalty",
         "repetition_penalty",
-        "response_format",
         "seed",
         "stop",
-        "structured_outputs",
         "temperature",
         "top_k",
         "top_p"
@@ -16838,58 +16427,6 @@
         "context_length": 65536,
         "is_moderated": false,
         "max_completion_tokens": 8000
-      }
-    },
-    {
-      "architecture": {
-        "input_modalities": [
-          "text"
-        ],
-        "instruct_type": "deepseek-r1",
-        "modality": "text->text",
-        "output_modalities": [
-          "text"
-        ],
-        "tokenizer": "Other"
-      },
-      "canonical_slug": "thudm/glm-z1-32b-0414",
-      "context_length": 32768,
-      "created": 1744924148,
-      "description": "GLM-Z1-32B-0414 is an enhanced reasoning variant of GLM-4-32B, built for deep mathematical, logical, and code-oriented problem solving. It applies extended reinforcement learning—both task-specific and general pairwise preference-based—to improve performance on complex multi-step tasks. Compared to the base GLM-4-32B model, Z1 significantly boosts capabilities in structured reasoning and formal domains.\n\nThe model supports enforced “thinking” steps via prompt engineering and offers improved coherence for long-form outputs. It’s optimized for use in agentic workflows, and includes support for long context (via YaRN), JSON tool calling, and fine-grained sampling configuration for stable inference. Ideal for use cases requiring deliberate, multi-step reasoning or formal derivations.",
-      "hugging_face_id": "THUDM/GLM-Z1-32B-0414",
-      "id": "thudm/glm-z1-32b",
-      "name": "THUDM: GLM Z1 32B",
-      "per_request_limits": null,
-      "pricing": {
-        "audio": null,
-        "completion": "0.00000022",
-        "image": "0",
-        "input_cache_read": null,
-        "input_cache_write": null,
-        "internal_reasoning": "0",
-        "prompt": "0.00000005",
-        "request": "0",
-        "web_search": "0"
-      },
-      "supported_parameters": [
-        "frequency_penalty",
-        "include_reasoning",
-        "max_tokens",
-        "presence_penalty",
-        "reasoning",
-        "repetition_penalty",
-        "response_format",
-        "seed",
-        "stop",
-        "structured_outputs",
-        "temperature",
-        "top_k",
-        "top_p"
-      ],
-      "top_provider": {
-        "context_length": 32768,
-        "is_moderated": false,
-        "max_completion_tokens": 32768
       }
     },
     {
