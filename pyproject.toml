@@ -2,9 +2,9 @@
 authors = [{ name = "Allen Chou", email = "f1470891079@gmail.com" }]
 dependencies = [
   "dictpress",
-  "openai (>=1,<2)",
+  "openai",
   "openai-agents",
-  "pydantic (>=2)",
+  "pydantic",
   "str-or-none",
 ]
 description = "Simple Library for OpenAI Usage"
@@ -12,7 +12,7 @@ license = { text = "MIT" }
 name = "openai-usage"
 readme = "README.md"
 requires-python = ">=3.11,<4"
-version = "0.5.1"
+version = "0.6.0"
 
 [project.urls]
 Homepage = "https://github.com/allen2c/openai-usage"
