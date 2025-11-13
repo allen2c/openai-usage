@@ -13,6 +13,10 @@ logger = logging.getLogger(__name__)
 MODEL_CONFIG_EXTRA: typing.Literal["forbid", "allow", "ignore"] = "ignore"
 
 
+DASH_TRANS = str.maketrans({ord(":"): "-", ord("_"): "-", ord("."): "-"})
+DROP_TRANS = str.maketrans({ord(":"): None, ord("-"): None, ord("."): None})
+
+
 @functools.cache
 def get_models(realtime_pricing: bool = False) -> "GetOpenRouterModelsResponse":
     """Fetch all available models from OpenRouter API.
@@ -49,13 +53,23 @@ def get_model(
 
     models: list[OpenRouterModel] = []
     for model in all_models.data:
+        # Exact match
         if re.search(f"{model_name}$", model.id, re.IGNORECASE):
-            return model  # Exact match
+            return model
+        # Partial match with the same name
         if re.search(model_name, model.id, re.IGNORECASE):
             models.append(model)
+        #  Normalize as dash-separated string
         if re.search(
-            model_name.replace(":", "").replace("-", ""),
-            model.id.replace(":", "").replace("-", ""),
+            model_name.translate(DASH_TRANS),
+            model.id.translate(DASH_TRANS),
+            re.IGNORECASE,
+        ):
+            models.append(model)
+        # Partial match removing colons, dashes and dots
+        if re.search(
+            model_name.translate(DROP_TRANS),
+            model.id.translate(DROP_TRANS),
             re.IGNORECASE,
         ):
             models.append(model)
