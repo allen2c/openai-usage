@@ -1,5 +1,6 @@
 import decimal
 import functools
+import json
 import logging
 import pathlib
 import re
@@ -38,6 +39,12 @@ def get_models(realtime_pricing: bool = False) -> "GetOpenRouterModelsResponse":
     logger.info("Using locally cached models")
     return GetOpenRouterModelsResponse.model_validate_json(
         pathlib.Path(__file__).parent.parent.joinpath("models.json").read_text()
+    ).merge(
+        GetOpenRouterModelsResponse.model_validate_json(
+            pathlib.Path(__file__)
+            .parent.parent.joinpath("models_voyageai.json")
+            .read_text()
+        )
     )
 
 
@@ -208,3 +215,12 @@ class GetOpenRouterModelsResponse(pydantic.BaseModel):
     """API response wrapper containing list of available models."""
 
     data: list[OpenRouterModel]
+
+    def merge(
+        self, other: "GetOpenRouterModelsResponse"
+    ) -> "GetOpenRouterModelsResponse":
+        data = self.data + other.data
+        data_dict = json.loads(
+            pydantic.TypeAdapter(list[OpenRouterModel]).dump_json(data)
+        )
+        return GetOpenRouterModelsResponse.model_validate({"data": data_dict})

@@ -1,0 +1,330 @@
+{
+  "data": [
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "text->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-4-large",
+      "context_length": 32000,
+      "created": 1767225600,
+      "description": "Flagship model of the Voyage 4 series with the best general-purpose and multilingual retrieval quality. Shared embedding space across the Voyage 4 family. Supports adjustable dimensions (256/512/1024/2048).",
+      "hugging_face_id": "",
+      "id": "voyageai/voyage-4-large",
+      "name": "Voyage AI: Voyage-4 Large",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.0000003",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": [
+        "input_type",
+        "truncation",
+        "output_dimension",
+        "output_dtype"
+      ],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "text->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-4",
+      "context_length": 32000,
+      "created": 1767225600,
+      "description": "Balanced general-purpose and multilingual retrieval model in the Voyage 4 series. Shared embedding space. Supports adjustable dimensions (256/512/1024/2048).",
+      "hugging_face_id": "",
+      "id": "voyageai/voyage-4",
+      "name": "Voyage AI: Voyage-4",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.00000015",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": [
+        "input_type",
+        "truncation",
+        "output_dimension",
+        "output_dtype"
+      ],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "text->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-4-lite",
+      "context_length": 32000,
+      "created": 1767225600,
+      "description": "Latency and cost-optimized model in the Voyage 4 series. Shared embedding space. Supports adjustable dimensions (256/512/1024/2048).",
+      "hugging_face_id": "",
+      "id": "voyageai/voyage-4-lite",
+      "name": "Voyage AI: Voyage-4 Lite",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.00000005",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": [
+        "input_type",
+        "truncation",
+        "output_dimension",
+        "output_dtype"
+      ],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "text->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-4-nano",
+      "context_length": 32000,
+      "created": 1767225600,
+      "description": "Open-weight model in the Voyage 4 series for self-hosting. Shared embedding space. Supports adjustable dimensions (256/512/1024/2048). Available on Hugging Face.",
+      "hugging_face_id": "voyageai/voyage-4-nano",
+      "id": "voyageai/voyage-4-nano",
+      "name": "Voyage AI: Voyage-4 Nano (open-weight)",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.00000003",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": [
+        "input_type",
+        "truncation",
+        "output_dimension",
+        "output_dtype"
+      ],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text", "image", "video"],
+        "instruct_type": null,
+        "modality": "text+image+video->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-multimodal-3.5",
+      "context_length": 32000,
+      "created": 1767225600,
+      "description": "Next-generation multimodal embedding model supporting interleaved text, images, and video frames. First production-grade model with Matryoshka embeddings for flexible dimensionality and native video retrieval.",
+      "hugging_face_id": "",
+      "id": "voyageai/voyage-multimodal-3.5",
+      "name": "Voyage AI: Voyage Multimodal 3.5",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.000001",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": ["input_type", "truncation", "output_dimension"],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "text->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-code-3",
+      "context_length": 32000,
+      "created": 1765000000,
+      "description": "Specialized model optimized for code retrieval and search.",
+      "hugging_face_id": "",
+      "id": "voyageai/voyage-code-3",
+      "name": "Voyage AI: Voyage Code 3",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.0000002",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": ["input_type", "truncation", "output_dimension"],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "text->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-finance-2",
+      "context_length": 32000,
+      "created": 1754000000,
+      "description": "Domain-specific model optimized for finance retrieval and RAG applications.",
+      "hugging_face_id": "",
+      "id": "voyageai/voyage-finance-2",
+      "name": "Voyage AI: Voyage Finance 2",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.00000025",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": ["input_type", "truncation"],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "text->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-law-2",
+      "context_length": 16000,
+      "created": 1750000000,
+      "description": "Domain-specific model optimized for legal retrieval and RAG applications.",
+      "hugging_face_id": "",
+      "id": "voyageai/voyage-law-2",
+      "name": "Voyage AI: Voyage Law 2",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.00000025",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": ["input_type", "truncation"],
+      "top_provider": {
+        "context_length": 16000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "text->embedding",
+        "output_modalities": ["embedding"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/voyage-3-large",
+      "context_length": 32000,
+      "created": 1759000000,
+      "description": "Previous-generation large general-purpose and multilingual embedding model (legacy; recommend Voyage 4 series).",
+      "hugging_face_id": "",
+      "id": "voyageai/voyage-3-large",
+      "name": "Voyage AI: Voyage-3 Large (legacy)",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.00000025",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": ["input_type", "truncation", "output_dimension"],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    }
+  ]
+}

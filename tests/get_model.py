@@ -8,6 +8,7 @@ from openai_usage.extra.open_router import get_model
     [
         "gpt-3.5-turbo",
         "gpt-4.1-nano",
+        "voyageai/voyage-3-large",
         "google/gemma-3-27b-it",
         "anthropic/claude-haiku-4-5",
         "anthropic/claude-haiku-4.5",
