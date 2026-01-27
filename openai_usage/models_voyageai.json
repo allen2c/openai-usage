@@ -325,6 +325,74 @@
         "is_moderated": false,
         "max_completion_tokens": null
       }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "rerank",
+        "output_modalities": ["scores"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/rerank-2.5",
+      "context_length": 32000,
+      "created": 1767225600,
+      "description": "Latest generalist reranker optimized for quality, with instruction-following and multilingual support. Processes query + documents and returns relevance scores. Max 1,000 documents per request.",
+      "hugging_face_id": "",
+      "id": "voyageai/rerank-2.5",
+      "name": "Voyage AI: Rerank 2.5",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.00000005",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": ["top_k", "truncation"],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
+    },
+    {
+      "architecture": {
+        "input_modalities": ["text"],
+        "instruct_type": null,
+        "modality": "rerank",
+        "output_modalities": ["scores"],
+        "tokenizer": "Other"
+      },
+      "canonical_slug": "voyageai/rerank-2.5-lite",
+      "context_length": 32000,
+      "created": 1767225600,
+      "description": "Latest lite reranker optimized for latency and quality, with instruction-following and multilingual support. Processes query + documents and returns relevance scores. Max 1,000 documents per request.",
+      "hugging_face_id": "",
+      "id": "voyageai/rerank-2.5-lite",
+      "name": "Voyage AI: Rerank 2.5 Lite",
+      "per_request_limits": null,
+      "pricing": {
+        "audio": null,
+        "completion": "0",
+        "image": null,
+        "input_cache_read": null,
+        "input_cache_write": null,
+        "internal_reasoning": null,
+        "prompt": "0.00000002",
+        "request": null,
+        "web_search": null
+      },
+      "supported_parameters": ["top_k", "truncation"],
+      "top_provider": {
+        "context_length": 32000,
+        "is_moderated": false,
+        "max_completion_tokens": null
+      }
     }
   ]
 }
