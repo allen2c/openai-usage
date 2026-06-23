@@ -4,6 +4,13 @@ from openai.types.completion_usage import (
     CompletionUsage,
     PromptTokensDetails,
 )
+from openai.types.realtime.realtime_response_usage import RealtimeResponseUsage
+from openai.types.realtime.realtime_response_usage_input_token_details import (
+    RealtimeResponseUsageInputTokenDetails,
+)
+from openai.types.realtime.realtime_response_usage_output_token_details import (
+    RealtimeResponseUsageOutputTokenDetails,
+)
 from openai.types.responses.response_usage import (
     InputTokensDetails,
     OutputTokensDetails,
@@ -66,6 +73,65 @@ def test_from_openai_response_usage():
     assert usage.total_tokens == 30
     assert usage.input_tokens_details.cached_tokens == 5
     assert usage.output_tokens_details.reasoning_tokens == 8
+
+
+def test_from_openai_realtime_usage():
+    openai_usage = RealtimeResponseUsage(
+        input_tokens=100,
+        output_tokens=200,
+        total_tokens=300,
+        input_token_details=RealtimeResponseUsageInputTokenDetails(
+            audio_tokens=60, text_tokens=40, cached_tokens=10
+        ),
+        output_token_details=RealtimeResponseUsageOutputTokenDetails(
+            audio_tokens=150, text_tokens=50
+        ),
+    )
+    usage = Usage.from_openai(openai_usage)
+    assert usage.requests == 1
+    assert usage.input_tokens == 100
+    assert usage.output_tokens == 200
+    assert usage.total_tokens == 300
+    assert usage.input_tokens_details.cached_tokens == 10
+    assert usage.input_tokens_details.audio_tokens == 60
+    assert usage.input_tokens_details.text_tokens == 40
+    assert usage.output_tokens_details.audio_tokens == 150
+    assert usage.output_tokens_details.text_tokens == 50
+    assert usage.output_tokens_details.reasoning_tokens == 0
+
+
+def test_realtime_usage_backward_compatible_json():
+    # Old serialized payloads (no audio/text fields) must still validate.
+    old_json = (
+        '{"requests":1,"input_tokens":10,"output_tokens":20,"total_tokens":30,'
+        '"input_tokens_details":{"cached_tokens":5},'
+        '"output_tokens_details":{"reasoning_tokens":3}}'
+    )
+    usage = Usage.model_validate_json(old_json)
+    assert usage.input_tokens_details.cached_tokens == 5
+    assert usage.input_tokens_details.audio_tokens == 0
+    assert usage.output_tokens_details.reasoning_tokens == 3
+    assert usage.output_tokens_details.audio_tokens == 0
+
+
+def test_add_usage_accumulates_audio_tokens():
+    usage = Usage.from_openai(
+        RealtimeResponseUsage(
+            input_tokens=100,
+            output_tokens=200,
+            total_tokens=300,
+            input_token_details=RealtimeResponseUsageInputTokenDetails(
+                audio_tokens=60, cached_tokens=10
+            ),
+            output_token_details=RealtimeResponseUsageOutputTokenDetails(
+                audio_tokens=150
+            ),
+        )
+    )
+    usage.add(usage.model_copy(deep=True))
+    assert usage.input_tokens_details.audio_tokens == 120
+    assert usage.input_tokens_details.cached_tokens == 20
+    assert usage.output_tokens_details.audio_tokens == 300
 
 
 def test_from_openai_inplace():
