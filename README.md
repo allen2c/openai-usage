@@ -1,8 +1,9 @@
 # openai-usage
 
 [![PyPI](https://img.shields.io/pypi/v/openai-usage.svg)](https://pypi.org/project/openai-usage/)
+[![Tests](https://github.com/allen2c/openai-usage/actions/workflows/test.yml/badge.svg)](https://github.com/allen2c/openai-usage/actions/workflows/test.yml)
+[![Docs](https://github.com/allen2c/openai-usage/actions/workflows/docs.yml/badge.svg)](https://allen2c.github.io/openai-usage/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Docs](https://img.shields.io/badge/docs-mkdocs--material-blue.svg)](https://allen2c.github.io/openai-usage/)
 
 **One usage model for every OpenAI API.**
 
