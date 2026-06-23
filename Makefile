@@ -1,31 +1,14 @@
 # Development
-format:
-	@isort . \
-		--skip setup.py \
-		--skip .venv \
-		--skip build \
-		--skip dist \
-		--skip __pycache__ \
-		--skip docs \
-		--skip static \
-		--skip .conda
-	@black . \
-		--exclude setup.py \
-		--exclude .venv \
-		--exclude build \
-		--exclude dist \
-		--exclude __pycache__ \
-		--exclude docs \
-		--exclude static \
-		--exclude .conda
+fmt:
+	@isort openai_usage tests scripts
+	@black openai_usage tests scripts
+	@ruff check --fix openai_usage tests scripts
 
 install:
 	poetry install --all-extras --all-groups
 
 update:
 	poetry update
-	poetry export --without-hashes -f requirements.txt --output requirements.txt
-	poetry export --without-hashes -f requirements.txt --output requirements-all.txt --all-extras --all-groups
 
 fetch-models:
 	PYTHONPATH=. python scripts/fetch_models_to_local.py
