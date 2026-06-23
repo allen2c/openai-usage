@@ -217,8 +217,8 @@ class OpenRouterLinks(pydantic.BaseModel):
 class OpenRouterReasoningEffort(str, enum.Enum):
     """Known reasoning effort levels, ordered low to high.
 
-    Different models expose different subsets; unknown values fall back to
-    a plain ``str`` in the unions below.
+    Different models expose different subsets. Unknown values fall back to a
+    plain ``str`` via the ``ReasoningEffort`` alias below.
     """
 
     NONE = "none"
@@ -297,7 +297,7 @@ class OpenRouterModel(pydantic.BaseModel):
     per_request_limits: OpenRouterPerRequestLimits | None
     supported_parameters: list[str]
 
-    # Newer OpenRouter fields (all optional; spec TBD).
+    # Extended metadata from OpenRouter; optional and absent on older snapshots.
     default_parameters: OpenRouterDefaultParameters | None = None
     supported_voices: list[str] | None = None
     knowledge_cutoff: str | None = None
