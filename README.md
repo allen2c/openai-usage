@@ -1,8 +1,17 @@
 # openai-usage
 
 [![PyPI](https://img.shields.io/pypi/v/openai-usage.svg)](https://pypi.org/project/openai-usage/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-mkdocs--material-blue.svg)](https://allen2c.github.io/openai-usage/)
 
-Utilities to track and estimate API usage costs.
+**One usage model for every OpenAI API.**
+
+The OpenAI Python SDK reports usage in a different shape for almost every
+endpoint — Chat Completions, Responses, Agents SDK, Realtime, Batch, Embeddings,
+Images, Transcription. `openai-usage` collapses them all into a single, additive
+`Usage` object and estimates what it costs against live model pricing.
+
+📖 **Full documentation: <https://allen2c.github.io/openai-usage/>**
 
 ## Installation
 
@@ -10,49 +19,52 @@ Utilities to track and estimate API usage costs.
 pip install openai-usage
 ```
 
-## Usage
+Requires Python 3.11+.
 
-### Tracking Token Usage
-
-Track usage manually or create `Usage` objects from OpenAI's response objects.
-
-```python
-from openai_usage import Usage
-from openai.types.completion_usage import CompletionUsage
-
-# Manually create a Usage object
-manual_usage = Usage(requests=1, input_tokens=100, output_tokens=200, total_tokens=300)
-
-# Create from an OpenAI CompletionUsage object
-openai_completion_usage = CompletionUsage(prompt_tokens=50, completion_tokens=150, total_tokens=200)
-usage_from_openai = Usage.from_openai(openai_completion_usage)
-
-# Add usage objects together
-combined_usage = Usage()
-combined_usage.add(manual_usage)
-combined_usage.add(usage_from_openai)
-
-print(f"Total requests: {combined_usage.requests}")
-print(f"Total input tokens: {combined_usage.input_tokens}")
-print(f"Total output tokens: {combined_usage.output_tokens}")
-```
-
-### Estimating Costs
-
-Estimate the cost of your API usage for any supported model.
+## Quickstart
 
 ```python
 from openai_usage import Usage
 
-# Create a usage object
-usage = Usage(requests=1, input_tokens=1000, output_tokens=2000, total_tokens=3000)
+# Normalize usage from any OpenAI API into one shape
+total = Usage()
+total.add(Usage.from_openai(chat_completion.usage))          # Chat Completions
+total.add(Usage.from_openai(response.usage))                 # Responses API
+total.add(Usage.from_openai(realtime_event.response.usage))  # Realtime
 
-# Estimate cost for a model
-# The library fetches pricing data from an external API
-cost = usage.estimate_cost("anthropic/claude-3-haiku")
-print(f"Estimated cost for the model: ${cost:.6f}")
+print(total.input_tokens, total.output_tokens, total.total_tokens)
 
-# For the most up-to-date pricing, use realtime_pricing=True
-cost_realtime = usage.estimate_cost("anthropic/claude-3-haiku", realtime_pricing=True)
-print(f"Estimated real-time cost for the model: ${cost_realtime:.6f}")
+# Estimate the cost against any model
+print(f"${total.estimate_cost('gpt-4o'):.6f}")
 ```
+
+## What it does
+
+- **Unify** — `Usage.from_openai(...)` accepts Chat Completions, Responses,
+  Agents SDK, Realtime, Batch, Embeddings, Images, Transcription, and Assistants
+  run usage.
+- **Aggregate** — `Usage.add()` accumulates requests, tokens, and per-modality
+  detail (cached, reasoning, audio, image, text) across calls.
+- **Estimate** — `Usage.estimate_cost()` prices usage against any model using
+  OpenRouter pricing, with separate rates for cached, reasoning, audio, and image
+  tokens.
+- **Serialize** — `Usage` is a Pydantic model with full backward compatibility
+  for older payloads.
+
+See the [Supported Usage Types](https://allen2c.github.io/openai-usage/supported-usage/)
+table for the full compatibility matrix, and
+[Estimating Costs](https://allen2c.github.io/openai-usage/estimating-costs/) for
+pricing details and limitations.
+
+## Documentation
+
+The docs are built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
+and deployed to GitHub Pages on every push to `main`.
+
+```bash
+make mkdocs        # serve locally at http://localhost:8000
+```
+
+## License
+
+MIT — see [LICENSE](LICENSE).
