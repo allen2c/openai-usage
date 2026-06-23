@@ -156,6 +156,10 @@ class OpenRouterPricing(pydantic.BaseModel):
     def price_per_audio_token(self) -> decimal.Decimal:
         return decimal.Decimal(self.audio or 0)
 
+    @property
+    def price_per_image_token(self) -> decimal.Decimal:
+        return decimal.Decimal(self.image or 0)
+
 
 class OpenRouterTopProvider(pydantic.BaseModel):
     """Provider-specific limits and moderation settings."""
