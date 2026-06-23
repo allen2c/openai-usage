@@ -1,4 +1,5 @@
 import decimal
+import enum
 import functools
 import json
 import logging
@@ -151,6 +152,14 @@ class OpenRouterPricing(pydantic.BaseModel):
     def price_per_output_reasoning_token(self) -> decimal.Decimal:
         return decimal.Decimal(self.internal_reasoning or 0)
 
+    @property
+    def price_per_audio_token(self) -> decimal.Decimal:
+        return decimal.Decimal(self.audio or 0)
+
+    @property
+    def price_per_image_token(self) -> decimal.Decimal:
+        return decimal.Decimal(self.image or 0)
+
 
 class OpenRouterTopProvider(pydantic.BaseModel):
     """Provider-specific limits and moderation settings."""
@@ -192,6 +201,94 @@ class OpenRouterSupportedParameters(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
 
 
+class OpenRouterDefaultParameters(pydantic.BaseModel):
+    """Provider-suggested default sampling parameters for the model."""
+
+    temperature: float | None = None
+    top_p: float | None = None
+    top_k: int | None = None
+    frequency_penalty: float | None = None
+    presence_penalty: float | None = None
+    repetition_penalty: float | None = None
+
+    model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
+
+
+class OpenRouterLinks(pydantic.BaseModel):
+    """Related API resource links for the model."""
+
+    details: str | None = None
+
+    model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
+
+
+class OpenRouterReasoningEffort(str, enum.Enum):
+    """Known reasoning effort levels, ordered low to high.
+
+    Different models expose different subsets. Unknown values fall back to a
+    plain ``str`` via the ``ReasoningEffort`` alias below.
+    """
+
+    NONE = "none"
+    MINIMAL = "minimal"
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    XHIGH = "xhigh"
+    MAX = "max"
+
+
+# Resolve to the enum when the value is known, otherwise keep the raw string.
+# ``left_to_right`` is required so the enum is tried before the str fallback.
+ReasoningEffort = typing.Annotated[
+    OpenRouterReasoningEffort | str,
+    pydantic.Field(union_mode="left_to_right"),
+]
+
+
+class OpenRouterReasoning(pydantic.BaseModel):
+    """Reasoning / thinking capability metadata for the model."""
+
+    mandatory: bool | None = None
+    default_enabled: bool | None = None
+    supported_efforts: list[ReasoningEffort] | None = None
+    default_effort: ReasoningEffort | None = None
+    supports_max_tokens: bool | None = None
+
+    model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
+
+
+class OpenRouterDesignArenaBenchmark(pydantic.BaseModel):
+    """A single Design Arena benchmark result entry."""
+
+    arena: str | None = None
+    category: str | None = None
+    elo: float | None = None
+    win_rate: float | None = None
+    rank: int | None = None
+
+    model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
+
+
+class OpenRouterArtificialAnalysisBenchmark(pydantic.BaseModel):
+    """Artificial Analysis benchmark index scores."""
+
+    intelligence_index: float | None = None
+    coding_index: float | None = None
+    agentic_index: float | None = None
+
+    model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
+
+
+class OpenRouterBenchmarks(pydantic.BaseModel):
+    """Aggregated third-party benchmark results for the model."""
+
+    design_arena: list[OpenRouterDesignArenaBenchmark] | None = None
+    artificial_analysis: OpenRouterArtificialAnalysisBenchmark | None = None
+
+    model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
+
+
 class OpenRouterModel(pydantic.BaseModel):
     """Complete model information including pricing and capabilities."""
 
@@ -207,6 +304,15 @@ class OpenRouterModel(pydantic.BaseModel):
     top_provider: OpenRouterTopProvider
     per_request_limits: OpenRouterPerRequestLimits | None
     supported_parameters: list[str]
+
+    # Extended metadata from OpenRouter; optional and absent on older snapshots.
+    default_parameters: OpenRouterDefaultParameters | None = None
+    supported_voices: list[str] | None = None
+    knowledge_cutoff: str | None = None
+    expiration_date: str | None = None
+    links: OpenRouterLinks | None = None
+    reasoning: OpenRouterReasoning | None = None
+    benchmarks: OpenRouterBenchmarks | None = None
 
     model_config = pydantic.ConfigDict(extra=MODEL_CONFIG_EXTRA)
 

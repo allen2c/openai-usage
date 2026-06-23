@@ -1,0 +1,69 @@
+site_name: openai-usage
+site_description: Track, aggregate, and estimate the cost of OpenAI API usage.
+site_url: https://allen2c.github.io/openai-usage/
+repo_name: allen2c/openai-usage
+repo_url: https://github.com/allen2c/openai-usage
+copyright: Copyright &copy; Allen Chou — MIT License
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.sections
+    - content.code.copy
+    - content.code.annotate
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Guide:
+      - Tracking Usage: tracking-usage.md
+      - Estimating Costs: estimating-costs.md
+      - Supported Usage Types: supported-usage.md
+  - API Reference: api-reference.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/allen2c/openai-usage
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/openai-usage/
