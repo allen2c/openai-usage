@@ -45,7 +45,7 @@ print(f"${total.estimate_cost('gpt-4o'):.6f}")
   Agents SDK, Realtime, Batch, Embeddings, Images, Transcription, and Assistants
   run usage.
 - **Aggregate** — `Usage.add()` accumulates requests, tokens, and per-modality
-  detail (cached, reasoning, audio, image, text) across calls.
+  detail (cached, cache-write, reasoning, audio, image, text) across calls.
 - **Estimate** — `Usage.estimate_cost()` prices usage against any model using
   OpenRouter pricing, with separate rates for cached, reasoning, audio, and image
   tokens.

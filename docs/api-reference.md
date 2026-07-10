@@ -49,9 +49,15 @@ Extends `openai.types.responses.InputTokensDetails`.
 | Field | Default | Source |
 | --- | --- | --- |
 | `cached_tokens` | — | OpenAI schema |
+| `cache_write_tokens` | `0` | OpenAI schema |
 | `audio_tokens` | `0` | extension |
 | `text_tokens` | `0` | extension |
 | `image_tokens` | `0` | extension |
+
+`cache_write_tokens` mirrors the field newer OpenAI SDKs add to
+`InputTokensDetails`. It is redefined with a `0` default so the model stays
+constructible on both older SDKs (which lack the field) and newer ones (which
+make it required).
 
 ### `UsageOutputTokensDetails`
 
