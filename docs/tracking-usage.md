@@ -20,7 +20,7 @@ usage = Usage(
 | --- | --- | --- |
 | `requests` | `int` | Number of billable calls represented. |
 | `input_tokens` | `int` | Total input (prompt) tokens. |
-| `input_tokens_details` | `UsageInputTokensDetails` | Breakdown: `cached`, `audio`, `image`, `text`. |
+| `input_tokens_details` | `UsageInputTokensDetails` | Breakdown: `cached`, `cache_write`, `audio`, `image`, `text`. |
 | `output_tokens` | `int` | Total output (completion) tokens. |
 | `output_tokens_details` | `UsageOutputTokensDetails` | Breakdown: `reasoning`, `audio`, `image`, `text`. |
 | `total_tokens` | `int` | Input + output tokens. |

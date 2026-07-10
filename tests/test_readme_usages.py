@@ -38,6 +38,16 @@ from openai.types.responses.response_usage import (
 from openai_usage import Usage
 
 
+def _response_input_details(**kwargs) -> InputTokensDetails:
+    """Build a Responses ``InputTokensDetails`` across OpenAI SDK versions.
+
+    Newer SDKs require ``cache_write_tokens``; older ones do not accept it.
+    """
+    if "cache_write_tokens" in InputTokensDetails.model_fields:
+        kwargs.setdefault("cache_write_tokens", 0)
+    return InputTokensDetails(**kwargs)
+
+
 def test_usage_initialization():
     usage = Usage()
     assert usage.requests == 0
@@ -76,12 +86,35 @@ def test_from_openai_completion_usage_with_details():
     assert usage.output_tokens_details.reasoning_tokens == 3
 
 
+def test_from_openai_completion_usage_captures_cache_write_and_audio():
+    openai_usage = CompletionUsage(
+        prompt_tokens=10,
+        completion_tokens=20,
+        total_tokens=30,
+        prompt_tokens_details=PromptTokensDetails(cached_tokens=5, audio_tokens=4),
+        completion_tokens_details=CompletionTokensDetails(
+            reasoning_tokens=3, audio_tokens=6
+        ),
+    )
+    # cache_write_tokens is only settable on newer SDKs.
+    if "cache_write_tokens" in PromptTokensDetails.model_fields:
+        openai_usage.prompt_tokens_details.cache_write_tokens = 7  # type: ignore[union-attr]
+
+    usage = Usage.from_openai(openai_usage)
+    assert usage.input_tokens_details.audio_tokens == 4
+    assert usage.output_tokens_details.audio_tokens == 6
+    expected_cache_write = (
+        7 if "cache_write_tokens" in PromptTokensDetails.model_fields else 0
+    )
+    assert usage.input_tokens_details.cache_write_tokens == expected_cache_write
+
+
 def test_from_openai_response_usage():
     openai_usage = ResponseUsage(
         input_tokens=10,
         output_tokens=20,
         total_tokens=30,
-        input_tokens_details=InputTokensDetails(cached_tokens=5),
+        input_tokens_details=_response_input_details(cached_tokens=5),
         output_tokens_details=OutputTokensDetails(reasoning_tokens=8),
     )
     usage = Usage.from_openai(openai_usage)
@@ -99,7 +132,7 @@ def test_from_openai_realtime_usage():
         output_tokens=200,
         total_tokens=300,
         input_token_details=RealtimeResponseUsageInputTokenDetails(
-            audio_tokens=60, text_tokens=40, cached_tokens=10
+            audio_tokens=60, text_tokens=40, cached_tokens=10, image_tokens=5
         ),
         output_token_details=RealtimeResponseUsageOutputTokenDetails(
             audio_tokens=150, text_tokens=50
@@ -113,6 +146,7 @@ def test_from_openai_realtime_usage():
     assert usage.input_tokens_details.cached_tokens == 10
     assert usage.input_tokens_details.audio_tokens == 60
     assert usage.input_tokens_details.text_tokens == 40
+    assert usage.input_tokens_details.image_tokens == 5
     assert usage.output_tokens_details.audio_tokens == 150
     assert usage.output_tokens_details.text_tokens == 50
     assert usage.output_tokens_details.reasoning_tokens == 0
@@ -282,7 +316,7 @@ def test_from_agents_usage():
         input_tokens=10,
         output_tokens=20,
         total_tokens=30,
-        input_tokens_details=InputTokensDetails(cached_tokens=5),
+        input_tokens_details=_response_input_details(cached_tokens=5),
         output_tokens_details=OutputTokensDetails(reasoning_tokens=8),
     )
     usage = Usage.from_openai(agents_usage)
@@ -299,7 +333,7 @@ def test_from_agents_run_context_wrapper():
         input_tokens=10,
         output_tokens=20,
         total_tokens=30,
-        input_tokens_details=InputTokensDetails(cached_tokens=5),
+        input_tokens_details=_response_input_details(cached_tokens=5),
         output_tokens_details=OutputTokensDetails(reasoning_tokens=8),
     )
     context_wrapper = agents.RunContextWrapper(context=None, usage=agents_usage)
