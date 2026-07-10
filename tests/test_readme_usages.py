@@ -38,6 +38,16 @@ from openai.types.responses.response_usage import (
 from openai_usage import Usage
 
 
+def _response_input_details(**kwargs) -> InputTokensDetails:
+    """Build a Responses ``InputTokensDetails`` across OpenAI SDK versions.
+
+    Newer SDKs require ``cache_write_tokens``; older ones do not accept it.
+    """
+    if "cache_write_tokens" in InputTokensDetails.model_fields:
+        kwargs.setdefault("cache_write_tokens", 0)
+    return InputTokensDetails(**kwargs)
+
+
 def test_usage_initialization():
     usage = Usage()
     assert usage.requests == 0
@@ -81,7 +91,7 @@ def test_from_openai_response_usage():
         input_tokens=10,
         output_tokens=20,
         total_tokens=30,
-        input_tokens_details=InputTokensDetails(cached_tokens=5),
+        input_tokens_details=_response_input_details(cached_tokens=5),
         output_tokens_details=OutputTokensDetails(reasoning_tokens=8),
     )
     usage = Usage.from_openai(openai_usage)
@@ -282,7 +292,7 @@ def test_from_agents_usage():
         input_tokens=10,
         output_tokens=20,
         total_tokens=30,
-        input_tokens_details=InputTokensDetails(cached_tokens=5),
+        input_tokens_details=_response_input_details(cached_tokens=5),
         output_tokens_details=OutputTokensDetails(reasoning_tokens=8),
     )
     usage = Usage.from_openai(agents_usage)
@@ -299,7 +309,7 @@ def test_from_agents_run_context_wrapper():
         input_tokens=10,
         output_tokens=20,
         total_tokens=30,
-        input_tokens_details=InputTokensDetails(cached_tokens=5),
+        input_tokens_details=_response_input_details(cached_tokens=5),
         output_tokens_details=OutputTokensDetails(reasoning_tokens=8),
     )
     context_wrapper = agents.RunContextWrapper(context=None, usage=agents_usage)
