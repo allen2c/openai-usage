@@ -145,34 +145,28 @@ class Usage(pydantic.BaseModel):
             )
 
         elif isinstance(openai_usage, CompletionUsage):
+            p_details = openai_usage.prompt_tokens_details
+            c_details = openai_usage.completion_tokens_details
             usage = cls(
                 requests=1,
                 input_tokens=openai_usage.prompt_tokens,
                 input_tokens_details=UsageInputTokensDetails(
-                    cached_tokens=(
-                        openai_usage.prompt_tokens_details.cached_tokens or 0
-                        if openai_usage.prompt_tokens_details
-                        else 0
-                    ),
+                    cached_tokens=(p_details.cached_tokens or 0) if p_details else 0,
                     # cache_write_tokens is present only on newer SDKs.
                     cache_write_tokens=(
-                        getattr(
-                            openai_usage.prompt_tokens_details,
-                            "cache_write_tokens",
-                            0,
-                        )
-                        or 0
-                        if openai_usage.prompt_tokens_details
+                        (getattr(p_details, "cache_write_tokens", 0) or 0)
+                        if p_details
                         else 0
                     ),
+                    # Audio input tokens (e.g. gpt-4o-audio-preview via chat).
+                    audio_tokens=(p_details.audio_tokens or 0) if p_details else 0,
                 ),
                 output_tokens=openai_usage.completion_tokens,
                 output_tokens_details=UsageOutputTokensDetails(
                     reasoning_tokens=(
-                        openai_usage.completion_tokens_details.reasoning_tokens or 0
-                        if openai_usage.completion_tokens_details
-                        else 0
-                    )
+                        (c_details.reasoning_tokens or 0) if c_details else 0
+                    ),
+                    audio_tokens=(c_details.audio_tokens or 0) if c_details else 0,
                 ),
                 total_tokens=openai_usage.total_tokens,
             )
@@ -204,6 +198,12 @@ class Usage(pydantic.BaseModel):
                     cached_tokens=(in_details.cached_tokens or 0) if in_details else 0,
                     audio_tokens=(in_details.audio_tokens or 0) if in_details else 0,
                     text_tokens=(in_details.text_tokens or 0) if in_details else 0,
+                    # image_tokens is present only on newer SDKs.
+                    image_tokens=(
+                        (getattr(in_details, "image_tokens", 0) or 0)
+                        if in_details
+                        else 0
+                    ),
                 ),
                 output_tokens=openai_usage.output_tokens or 0,
                 output_tokens_details=UsageOutputTokensDetails(
