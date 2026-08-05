@@ -184,3 +184,72 @@ def test_result_can_be_priced():
         UsageMetadata(prompt_token_count=1000, candidates_token_count=500)
     )
     assert usage.estimate_cost("gemini-2.5-pro") > 0
+
+
+def test_cached_modalities_are_removed_from_the_prompt_breakdown():
+    """The prompt breakdown covers the cached content too.
+
+    Billing the same cached audio token at both the cache rate and the audio
+    rate would overcharge, and would push real text out of its bucket.
+    """
+    usage = Usage.from_openai(
+        UsageMetadata(
+            prompt_token_count=1000,
+            cached_content_token_count=400,
+            candidates_token_count=100,
+            prompt_tokens_details=_modalities(
+                (MediaModality.AUDIO, 400), (MediaModality.TEXT, 600)
+            ),
+            cache_tokens_details=_modalities((MediaModality.AUDIO, 400)),
+        )
+    )
+    assert usage.input_tokens == 1000
+    assert usage.input_tokens_details.cached_tokens == 400
+    assert usage.input_tokens_details.audio_tokens == 0
+    assert usage.input_tokens_details.text_tokens == 600
+
+
+def test_cached_modalities_never_go_negative():
+    usage = Usage.from_openai(
+        UsageMetadata(
+            prompt_token_count=100,
+            cached_content_token_count=500,
+            prompt_tokens_details=_modalities((MediaModality.AUDIO, 100)),
+            cache_tokens_details=_modalities((MediaModality.AUDIO, 500)),
+        )
+    )
+    assert usage.input_tokens_details.audio_tokens == 0
+
+
+def test_total_tokens_falls_back_to_the_parts():
+    """total_token_count is optional like every other field."""
+    usage = Usage.from_openai(
+        UsageMetadata(
+            prompt_token_count=100,
+            tool_use_prompt_token_count=10,
+            candidates_token_count=50,
+            thoughts_token_count=20,
+        )
+    )
+    assert usage.input_tokens == 110
+    assert usage.output_tokens == 70
+    assert usage.total_tokens == 180
+
+
+def test_reported_total_tokens_wins():
+    usage = Usage.from_openai(
+        UsageMetadata(
+            prompt_token_count=100,
+            candidates_token_count=50,
+            total_token_count=999,
+        )
+    )
+    assert usage.total_tokens == 999
+
+
+def test_non_finite_counts_degrade_to_zero():
+    metadata = UsageMetadata(prompt_token_count=100)
+    object.__setattr__(metadata, "candidates_token_count", float("nan"))
+
+    usage = Usage.from_openai(metadata)
+    assert usage.output_tokens == 0

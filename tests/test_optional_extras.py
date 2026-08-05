@@ -62,3 +62,23 @@ def test_any_usage_alias_is_exported():
 
     assert hasattr(openai_usage, "AnyUsage")
     assert hasattr(openai_usage, "OpenAIUsage")
+
+
+def test_non_finite_seconds_do_not_crash_the_estimator():
+    """Decimal(0) * Decimal("Infinity") raises InvalidOperation."""
+    usage = Usage(requests=1, seconds=float("inf"))
+    assert usage.estimate_cost("gpt-4o-mini") == 0.0
+
+
+def test_nan_seconds_do_not_poison_the_cost():
+    usage = Usage(requests=1, seconds=float("nan"))
+    cost = usage.estimate_cost("gpt-4o-mini")
+    assert cost == cost  # not NaN
+    assert cost == 0.0
+
+
+def test_deprecated_shim_still_exposes_its_logger():
+    """v0.9.1 had no __all__, so `logger` was importable from it."""
+    from openai_usage.extra.open_router import logger
+
+    assert logger.name.endswith("open_router")

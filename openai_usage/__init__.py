@@ -6,6 +6,7 @@ Simple models for tracking and aggregating OpenAI API usage data.
 
 import decimal
 import logging
+import math
 import pathlib
 import sys
 import typing
@@ -400,6 +401,13 @@ class Usage(pydantic.BaseModel):
             0, self.output_tokens - output_audio - output_image - output_reasoning
         )
 
+        # Decimal(0) * Decimal("Infinity") raises, and a NaN would propagate
+        # into the returned string and poison any downstream aggregate.
+        seconds = self.seconds
+        if not math.isfinite(seconds):
+            logger.warning(f"Ignoring non-finite seconds {seconds!r}")
+            seconds = 0.0
+
         cost = (
             +pricing.price_per_request * self.requests
             + pricing.price_per_input_token_without_cached * input_text
@@ -411,7 +419,7 @@ class Usage(pydantic.BaseModel):
             + pricing.price_per_output_audio_token * output_audio
             + pricing.price_per_input_image_token * input_image
             + pricing.price_per_output_image_token * output_image
-            + pricing.price_per_second * decimal.Decimal(str(self.seconds))
+            + pricing.price_per_second * decimal.Decimal(str(seconds))
         )
         return str(cost)
 
@@ -449,8 +457,13 @@ def _int(value: typing.Any) -> int:
     """Coerce an optional token count to an int.
 
     Both optional SDKs leave counts as ``None`` when a modality does not apply,
-    and litellm additionally deletes attributes whose value is ``None``.
+    and litellm additionally deletes attributes whose value is ``None``. A
+    non-finite float would otherwise raise here rather than degrade, so it is
+    read as ``0`` alongside the other missing-value cases.
     """
+    if isinstance(value, float) and not math.isfinite(value):
+        logger.warning(f"Ignoring non-finite token count {value!r}")
+        return 0
     return int(value) if value else 0
 
 
@@ -491,17 +504,35 @@ def _genai_fields(genai_usage: typing.Any) -> dict[str, typing.Any]:
     )
     output_modalities = _sum_modalities(genai_usage.candidates_tokens_details)
 
+    # The prompt breakdown covers the whole prompt, cached content included, so
+    # a cached audio segment appears in both the AUDIO bucket and the cached
+    # count. The estimator treats those as disjoint, so remove the cached
+    # modalities here rather than bill them at two rates at once.
+    cached_modalities = _sum_modalities(genai_usage.cache_tokens_details)
+    input_modalities = {
+        name: max(0, count - cached_modalities[name])
+        for name, count in input_modalities.items()
+    }
+
+    cached = _int(genai_usage.cached_content_token_count)
+    input_tokens = prompt + tool_use_prompt
+    output_tokens = candidates + thoughts
+
+    # total_token_count is optional like everything else, and is defined
+    # upstream as exactly these parts summed.
+    total_tokens = _int(genai_usage.total_token_count) or input_tokens + output_tokens
+
     return {
         "requests": 1,
-        "input_tokens": prompt + tool_use_prompt,
+        "input_tokens": input_tokens,
         "input_tokens_details": UsageInputTokensDetails(
-            cached_tokens=_int(genai_usage.cached_content_token_count),
+            cached_tokens=cached,
             audio_tokens=input_modalities["AUDIO"],
             text_tokens=input_modalities["TEXT"],
             image_tokens=input_modalities["IMAGE"],
             video_tokens=input_modalities["VIDEO"],
         ),
-        "output_tokens": candidates + thoughts,
+        "output_tokens": output_tokens,
         "output_tokens_details": UsageOutputTokensDetails(
             reasoning_tokens=thoughts,
             audio_tokens=output_modalities["AUDIO"],
@@ -509,7 +540,7 @@ def _genai_fields(genai_usage: typing.Any) -> dict[str, typing.Any]:
             image_tokens=output_modalities["IMAGE"],
             video_tokens=output_modalities["VIDEO"],
         ),
-        "total_tokens": _int(genai_usage.total_token_count),
+        "total_tokens": total_tokens,
     }
 
 
