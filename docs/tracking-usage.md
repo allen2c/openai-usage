@@ -20,9 +20,9 @@ usage = Usage(
 | --- | --- | --- |
 | `requests` | `int` | Number of billable calls represented. |
 | `input_tokens` | `int` | Total input (prompt) tokens. |
-| `input_tokens_details` | `UsageInputTokensDetails` | Breakdown: `cached`, `cache_write`, `audio`, `image`, `text`. |
+| `input_tokens_details` | `UsageInputTokensDetails` | Breakdown: `cached`, `cache_write`, `audio`, `image`, `video`, `text`. |
 | `output_tokens` | `int` | Total output (completion) tokens. |
-| `output_tokens_details` | `UsageOutputTokensDetails` | Breakdown: `reasoning`, `audio`, `image`, `text`. |
+| `output_tokens_details` | `UsageOutputTokensDetails` | Breakdown: `reasoning`, `audio`, `image`, `video`, `text`. |
 | `total_tokens` | `int` | Input + output tokens. |
 | `seconds` | `float` | Audio duration for duration-billed transcription. |
 | `model` | `str \| None` | Optional model id, used as the default for cost estimation. |
@@ -117,5 +117,5 @@ restored = Usage.model_validate_json(blob)
 ```
 
 Payloads serialized by older versions of the library — before the audio, image,
-and duration fields existed — still validate. The new fields simply default to
-`0`, so stored history keeps working after an upgrade.
+video, and duration fields existed — still validate. The new fields simply
+default to `0`, so stored history keeps working after an upgrade.
