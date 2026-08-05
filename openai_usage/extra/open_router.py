@@ -27,6 +27,7 @@ from openai_usage.pricing.open_router import (
     ReasoningEffort,
     get_model,
     get_models,
+    logger,
     matches_loosely,
 )
 
@@ -53,5 +54,6 @@ __all__ = [
     "ReasoningEffort",
     "get_model",
     "get_models",
+    "logger",
     "matches_loosely",
 ]

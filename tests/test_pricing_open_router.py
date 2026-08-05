@@ -85,3 +85,13 @@ def test_duration_rate_is_zero():
 def test_optional_rates_tolerate_none(field):
     pricing = _pricing(**{field: None})
     assert isinstance(pricing.price_per_request, decimal.Decimal)
+
+
+def test_a_free_cache_read_rate_is_not_replaced_by_the_prompt_rate():
+    """Decimal(0) is falsy, so `or` would silently bill the full rate."""
+    pricing = _pricing(input_cache_read="0")
+    assert pricing.price_per_input_token_with_cached == decimal.Decimal(0)
+
+
+def test_an_absent_cache_read_rate_still_falls_back():
+    assert _pricing().price_per_input_token_with_cached == decimal.Decimal("0.000003")

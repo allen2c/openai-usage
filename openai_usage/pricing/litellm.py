@@ -18,7 +18,7 @@ import typing
 
 import pydantic
 
-from openai_usage.pricing.cache import TTLCache, fetch_text
+from openai_usage.pricing.cache import DEGRADED_TTL_SECONDS, TTLCache, fetch_text
 
 logger = logging.getLogger(__name__)
 
@@ -45,13 +45,13 @@ def get_models(*, force_refresh: bool = False) -> dict[str, "LiteLLMModel"]:
     text = fetch_text(MODELS_URL, CACHE_FILENAME, force_refresh=force_refresh)
     if text is None:
         logger.debug("LiteLLM pricing catalog unavailable")
-        return _models_cache.set({})
+        return _models_cache.set({}, ttl=DEGRADED_TTL_SECONDS)
 
     try:
         models = _parse(text)
-    except (json.JSONDecodeError, pydantic.ValidationError) as e:
+    except (json.JSONDecodeError, pydantic.ValidationError, TypeError) as e:
         logger.warning(f"Could not parse the LiteLLM pricing catalog: {e}")
-        return _models_cache.set({})
+        return _models_cache.set({}, ttl=DEGRADED_TTL_SECONDS)
 
     logger.info(f"There are {len(models)} LiteLLM models")
     return _models_cache.set(models)
@@ -148,10 +148,11 @@ class LiteLLMPricing(pydantic.BaseModel):
 
     @property
     def price_per_input_token_with_cached(self) -> decimal.Decimal:
-        return (
-            _decimal(self.cache_read_input_token_cost)
-            or self.price_per_input_token_without_cached
-        )
+        # Tested against None rather than falsiness: a rate of 0 means the
+        # model reads cache for free, which is not the same as "unpriced".
+        if self.cache_read_input_token_cost is None:
+            return self.price_per_input_token_without_cached
+        return _decimal(self.cache_read_input_token_cost)
 
     @property
     def price_per_input_cache_write_token(self) -> decimal.Decimal:
@@ -164,11 +165,11 @@ class LiteLLMPricing(pydantic.BaseModel):
     @property
     def price_per_output_reasoning_token(self) -> decimal.Decimal:
         # Only a few dozen entries price reasoning separately; everywhere else
-        # providers bill thinking tokens at the ordinary output rate.
-        return (
-            _decimal(self.output_cost_per_reasoning_token)
-            or self.price_per_output_not_reasoning_token
-        )
+        # providers bill thinking tokens at the ordinary output rate. An
+        # explicit 0 means free, so absence is what triggers the fallback.
+        if self.output_cost_per_reasoning_token is None:
+            return self.price_per_output_not_reasoning_token
+        return _decimal(self.output_cost_per_reasoning_token)
 
     @property
     def price_per_input_audio_token(self) -> decimal.Decimal:
@@ -214,8 +215,16 @@ def _decimal(value: float | None) -> decimal.Decimal:
 
 
 def _parse(text: str) -> dict[str, LiteLLMModel]:
-    """Build the catalog map, skipping the non-model bookkeeping entries."""
+    """Build the catalog map, skipping the non-model bookkeeping entries.
+
+    Raises ``TypeError`` when the payload parses as JSON but is not the
+    expected object, which an upstream format change or an error page served
+    in place of the file would produce.
+    """
     raw = json.loads(text)
+    if not isinstance(raw, dict):
+        raise TypeError(f"Expected a JSON object, got {type(raw).__name__}")
+
     models: dict[str, LiteLLMModel] = {}
     for name, entry in raw.items():
         if name in NON_MODEL_KEYS or not isinstance(entry, dict):

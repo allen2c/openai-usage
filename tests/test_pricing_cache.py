@@ -1,5 +1,7 @@
+import json
 import os
 import pathlib
+import threading
 import time
 
 import pytest
@@ -202,3 +204,46 @@ def test_env_var_names_are_stable():
     assert cache.CACHE_TTL_ENV == "OPENAI_USAGE_CACHE_TTL"
     assert cache.OFFLINE_ENV == "OPENAI_USAGE_OFFLINE"
     assert os.environ.get("PYTEST_IS_RUNNING") == "true"
+
+
+def test_degraded_values_expire_on_their_own_shorter_ttl(monkeypatch):
+    monkeypatch.delenv(cache.CACHE_TTL_ENV, raising=False)
+    ttl_cache: cache.TTLCache[str] = cache.TTLCache()
+    ttl_cache.set("degraded", ttl=cache.DEGRADED_TTL_SECONDS)
+
+    now = time.monotonic()
+    monkeypatch.setattr(time, "monotonic", lambda: now + cache.DEGRADED_TTL_SECONDS + 1)
+    assert ttl_cache.get() is None
+
+
+def test_a_normal_value_still_uses_the_full_ttl(monkeypatch):
+    monkeypatch.delenv(cache.CACHE_TTL_ENV, raising=False)
+    ttl_cache: cache.TTLCache[str] = cache.TTLCache()
+    ttl_cache.set("fresh")
+
+    now = time.monotonic()
+    monkeypatch.setattr(time, "monotonic", lambda: now + cache.DEGRADED_TTL_SECONDS + 1)
+    assert ttl_cache.get() == "fresh"
+
+
+def test_concurrent_writes_leave_one_intact_file(cache_env):
+    """Two threads racing on one file would otherwise share a temp path.
+
+    Thread ids are only unique among *live* threads, so the writers are held
+    at a barrier to keep them concurrent.
+    """
+    path = cache_env / FILENAME
+    barrier = threading.Barrier(4)
+
+    def write(index: int) -> None:
+        barrier.wait()
+        cache._write(path, f'{{"writer": {index}}}')
+
+    threads = [threading.Thread(target=write, args=(i,)) for i in range(4)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
+    assert [p.name for p in cache_env.iterdir()] == [FILENAME]
+    assert json.loads(path.read_text())["writer"] in range(4)

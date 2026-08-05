@@ -8,7 +8,7 @@ import typing
 
 import pydantic
 
-from openai_usage.pricing.cache import TTLCache, fetch_text
+from openai_usage.pricing.cache import DEGRADED_TTL_SECONDS, TTLCache, fetch_text
 
 logger = logging.getLogger(__name__)
 
@@ -46,12 +46,17 @@ def get_models(realtime_pricing: bool = False) -> "GetOpenRouterModelsResponse":
         except pydantic.ValidationError as e:
             logger.warning(f"Could not parse the OpenRouter catalog: {e}")
 
+    # The snapshot is memoized only briefly, so a process that started while
+    # the network was down picks up the live catalog once it recovers instead
+    # of staying pinned to the shipped data for a whole day.
+    degraded_ttl = None
     if models is None:
         logger.info("Using the bundled OpenRouter models snapshot")
         models = _bundled_models()
+        degraded_ttl = DEGRADED_TTL_SECONDS
 
     logger.info(f"There are {len(models.data)} models")
-    return _models_cache.set(models.merge(_supplemental_models()))
+    return _models_cache.set(models.merge(_supplemental_models()), ttl=degraded_ttl)
 
 
 def matches_loosely(model_name: str, model_id: str) -> bool:
@@ -145,10 +150,11 @@ class OpenRouterPricing(pydantic.BaseModel):
 
     @property
     def price_per_input_token_with_cached(self) -> decimal.Decimal:
-        return (
-            decimal.Decimal(self.input_cache_read or 0)
-            or self.price_per_input_token_without_cached
-        )
+        # Tested against None rather than falsiness: a rate of "0" means the
+        # model reads cache for free, which is not the same as "unpriced".
+        if self.input_cache_read is None:
+            return self.price_per_input_token_without_cached
+        return decimal.Decimal(self.input_cache_read)
 
     @property
     def price_per_output_not_reasoning_token(self) -> decimal.Decimal:
@@ -160,9 +166,10 @@ class OpenRouterPricing(pydantic.BaseModel):
 
     @property
     def price_per_output_reasoning_token(self) -> decimal.Decimal:
-        # ``internal_reasoning`` is a surcharge and reads "0" for nearly every
-        # model, meaning thinking tokens are billed at the ordinary completion
-        # rate rather than being free.
+        # ``internal_reasoning`` is a surcharge, not a standalone rate, and
+        # reads "0" for nearly every model. Unlike the other rates here, a zero
+        # therefore means "no surcharge, bill at the completion rate" rather
+        # than "free", so falsiness is the correct test.
         return (
             decimal.Decimal(self.internal_reasoning or 0)
             or self.price_per_output_not_reasoning_token

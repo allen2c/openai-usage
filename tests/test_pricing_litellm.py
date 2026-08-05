@@ -1,5 +1,6 @@
 import decimal
 import json
+import time
 
 import pytest
 
@@ -167,3 +168,62 @@ def test_catalog_url_is_the_documented_one():
         "https://raw.githubusercontent.com/BerriAI/litellm/main/"
         "model_prices_and_context_window.json"
     )
+
+
+def test_a_free_cache_read_rate_is_not_replaced_by_the_input_rate():
+    """Decimal(0) is falsy, so `or` would silently bill the full rate.
+
+    Fifteen live catalog entries price cache reads at 0 alongside a non-zero
+    input rate.
+    """
+    pricing = litellm.LiteLLMPricing(
+        input_cost_per_token=3e-07, cache_read_input_token_cost=0.0
+    )
+    assert pricing.price_per_input_token_with_cached == decimal.Decimal(0)
+    assert pricing.price_per_input_token_without_cached == decimal.Decimal("3e-07")
+
+
+def test_a_free_reasoning_rate_is_not_replaced_by_the_output_rate():
+    pricing = litellm.LiteLLMPricing(
+        output_cost_per_token=1e-05, output_cost_per_reasoning_token=0.0
+    )
+    assert pricing.price_per_output_reasoning_token == decimal.Decimal(0)
+
+
+def test_a_failed_fetch_is_retried_soon_rather_than_pinned_for_a_day(monkeypatch):
+    """One blip near startup must not cost a process every LiteLLM price."""
+    litellm._models_cache.clear()
+    calls = {"n": 0}
+
+    def flaky(url, filename, force_refresh=False):
+        calls["n"] += 1
+        return None if calls["n"] == 1 else json.dumps(CATALOG)
+
+    monkeypatch.setattr(litellm, "fetch_text", flaky)
+
+    assert litellm.get_models() == {}
+
+    # Still inside the short degraded window: no retry yet.
+    assert litellm.get_models() == {}
+    assert calls["n"] == 1
+
+    now = time.monotonic()
+    monkeypatch.setattr(
+        time, "monotonic", lambda: now + litellm.DEGRADED_TTL_SECONDS + 1
+    )
+    assert "gpt-4o" in litellm.get_models()
+    assert calls["n"] == 2
+
+
+def test_degraded_window_is_much_shorter_than_the_normal_ttl():
+    assert litellm.DEGRADED_TTL_SECONDS < 3600
+
+
+@pytest.mark.parametrize("payload", ["[1, 2, 3]", '"a string"', "123", "null"])
+def test_a_non_object_payload_does_not_crash(monkeypatch, payload):
+    """GitHub raw can serve an error page that still parses as JSON."""
+    litellm._models_cache.clear()
+    monkeypatch.setattr(
+        litellm, "fetch_text", lambda url, filename, force_refresh=False: payload
+    )
+    assert litellm.get_models() == {}

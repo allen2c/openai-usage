@@ -9,6 +9,7 @@ stale cache entry, and an unwritable cache directory is simply skipped.
 import logging
 import os
 import pathlib
+import threading
 import time
 import typing
 
@@ -22,6 +23,11 @@ OFFLINE_ENV = "OPENAI_USAGE_OFFLINE"
 
 DEFAULT_CACHE_DIR = pathlib.Path(".cache") / "openai-usage"
 DEFAULT_TTL_SECONDS = 24 * 60 * 60
+
+# How long a degraded catalog is memoized before another fetch is attempted.
+# Short enough that a process recovers from a transient failure on its own,
+# long enough that a lasting outage does not retry on every single lookup.
+DEGRADED_TTL_SECONDS = 60
 
 # Separate connect and read budgets. Fetching is opportunistic and always has a
 # fallback, so an unreachable network must fail fast rather than stall a caller
@@ -107,23 +113,32 @@ class TTLCache(typing.Generic[_T]):
     def __init__(self) -> None:
         self._value: _T | None = None
         self._stored_at: float = 0.0
+        self._ttl: float | None = None
 
     def get(self) -> _T | None:
         if self._value is None:
             return None
-        if time.monotonic() - self._stored_at >= ttl_seconds():
+        ttl = ttl_seconds() if self._ttl is None else self._ttl
+        if time.monotonic() - self._stored_at >= ttl:
             self._value = None
             return None
         return self._value
 
-    def set(self, value: _T) -> _T:
+    def set(self, value: _T, *, ttl: float | None = None) -> _T:
+        """Memoize ``value``, optionally for less than the full TTL.
+
+        A degraded result is stored with a short ``ttl`` so one transient
+        failure near startup does not pin a process to it for a whole day.
+        """
         self._value = value
         self._stored_at = time.monotonic()
+        self._ttl = ttl
         return value
 
     def clear(self) -> None:
         self._value = None
         self._stored_at = 0.0
+        self._ttl = None
 
 
 def _read(path: pathlib.Path) -> str | None:
@@ -149,7 +164,9 @@ def _write(path: pathlib.Path, text: str) -> None:
     Caching is an optimization, so a read-only or full filesystem must never
     turn into an error for the caller.
     """
-    tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    # Thread id as well as pid: two threads racing to populate the same file
+    # would otherwise share a temp path, and the loser's replace would fail.
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{threading.get_ident()}.tmp")
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
         tmp.write_text(text)
