@@ -1,7 +1,7 @@
 import json
 import pathlib
 
-from openai_usage.extra.open_router import get_models
+from openai_usage.pricing.open_router import get_models
 
 path = pathlib.Path("openai_usage/models.json")
 
