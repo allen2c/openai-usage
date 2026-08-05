@@ -18,8 +18,39 @@ the same `Usage` shape with `requests=1`.
 | **Assistants run** | `openai.types.beta.threads.run.Usage` | prompt/completion tokens |
 | **Assistants run step** | `openai.types.beta.threads.runs.run_step.Usage` | prompt/completion tokens |
 
-All of these types are also re-exported from the package root for convenience and
-type hints:
+## Other providers
+
+Two non-OpenAI SDKs are supported through the same `from_openai()` call, each
+behind an [optional extra](installation.md#optional-extras):
+
+| Source | Type passed to `from_openai` | What is captured |
+| --- | --- | --- |
+| **Gemini** | `google.genai.types.GenerateContentResponseUsageMetadata` | input/output tokens, cached, **thinking**, tool-use prompt, per-modality **audio/image/video**/text |
+| **LiteLLM** | `litellm.types.utils.Usage` | input/output tokens, cached, **cache-write**, reasoning, **audio/image/video**/text, cost |
+
+Neither SDK is imported unless you already imported it yourself, so installing
+the extras is only necessary if you actually pass their objects.
+
+```python
+# Gemini
+response = client.models.generate_content(model="gemini-2.5-pro", contents="hi")
+usage = Usage.from_openai(response.usage_metadata)
+
+# LiteLLM
+response = litellm.completion(model="claude-sonnet-4-5", messages=messages)
+usage = Usage.from_openai(response.usage)
+```
+
+Two mapping decisions are worth knowing about:
+
+- Gemini reports `thoughts_token_count` **separately from**
+  `candidates_token_count`. `output_tokens` is the sum of both, and
+  `reasoning_tokens` holds the thinking count.
+- Gemini's `tool_use_prompt_token_count` is added to `input_tokens`, since it is
+  billed as input.
+
+All the OpenAI types are also re-exported from the package root for convenience
+and type hints:
 
 ```python
 from openai_usage import (
@@ -31,7 +62,8 @@ from openai_usage import (
     RunUsage,
     TranscriptionUsageDuration,
     TranscriptionUsageTokens,
-    OpenAIUsage,  # the Union of everything from_openai accepts
+    AnyUsage,     # the Union of everything from_openai accepts
+    OpenAIUsage,  # the OpenAI-only subset
 )
 ```
 

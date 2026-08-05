@@ -10,7 +10,8 @@
 The OpenAI Python SDK reports usage in a different shape for almost every
 endpoint — Chat Completions, Responses, Agents SDK, Realtime, Batch, Embeddings,
 Images, Transcription. `openai-usage` collapses them all into a single, additive
-`Usage` object and estimates what it costs against live model pricing.
+`Usage` object and estimates what it costs against live model pricing. Gemini
+and LiteLLM usage are supported too, behind optional extras.
 
 📖 **Full documentation: <https://allen2c.github.io/openai-usage/>**
 
@@ -43,12 +44,12 @@ print(f"${total.estimate_cost('gpt-4o'):.6f}")
 
 - **Unify** — `Usage.from_openai(...)` accepts Chat Completions, Responses,
   Agents SDK, Realtime, Batch, Embeddings, Images, Transcription, and Assistants
-  run usage.
+  run usage — plus Gemini and LiteLLM usage via optional extras.
 - **Aggregate** — `Usage.add()` accumulates requests, tokens, and per-modality
-  detail (cached, cache-write, reasoning, audio, image, text) across calls.
+  detail (cached, cache-write, reasoning, audio, image, video, text) across calls.
 - **Estimate** — `Usage.estimate_cost()` prices usage against any model using
-  OpenRouter pricing, with separate rates for cached, reasoning, audio, and image
-  tokens.
+  LiteLLM and OpenRouter pricing, with separate rates for cached, cache-write,
+  reasoning, audio, image, and duration-billed usage.
 - **Serialize** — `Usage` is a Pydantic model with full backward compatibility
   for older payloads.
 

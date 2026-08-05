@@ -51,14 +51,16 @@ print(f"${total.estimate_cost('gpt-4o'):.6f}")
     ---
 
     `Usage.add()` accumulates requests, tokens, and per-modality token details
-    across calls — including cached, reasoning, audio, image, and text tokens.
+    across calls — including cached, cache-write, reasoning, audio, image,
+    video, and text tokens.
 
 -   :material-cash:{ .lg .middle } **Estimate cost**
 
     ---
 
-    Price usage against any model using live OpenRouter pricing, with separate
-    rates for cached, reasoning, audio, and image tokens.
+    Price usage against any model using live LiteLLM and OpenRouter pricing,
+    with separate rates for cached, cache-write, reasoning, audio, image, and
+    duration.
 
 -   :material-language-python:{ .lg .middle } **Pydantic-native**
 

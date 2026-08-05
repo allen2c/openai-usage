@@ -6,7 +6,9 @@ Simple models for tracking and aggregating OpenAI API usage data.
 
 import decimal
 import logging
+import math
 import pathlib
+import sys
 import typing
 
 import agents
@@ -27,10 +29,12 @@ from openai.types.responses.response_usage import (
 )
 
 if typing.TYPE_CHECKING:
-    from openai_usage.extra.open_router import OpenRouterModel
+    from google.genai.types import GenerateContentResponseUsageMetadata
+    from litellm.types.utils import Usage as LiteLLMUsage
+
+    from openai_usage.pricing import PricedModel
 
 __version__ = pathlib.Path(__file__).parent.joinpath("VERSION").read_text().strip()
-
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +54,27 @@ OpenAIUsage: typing.TypeAlias = typing.Union[
     RunStepUsage,
 ]
 
+# Everything ``Usage.from_openai`` accepts. The two optional SDKs are quoted
+# because they are extras, so neither is importable at runtime by default.
+AnyUsage: typing.TypeAlias = typing.Union[
+    OpenAIUsage,
+    "GenerateContentResponseUsageMetadata",
+    "LiteLLMUsage",
+]
+
+# Gemini's MediaModality values that map onto a token detail field. DOCUMENT
+# and MODALITY_UNSPECIFIED have no field of their own and are deliberately left
+# in the plain-text remainder, which is the rate they are billed at.
+_TRACKED_MODALITIES = ("TEXT", "AUDIO", "IMAGE", "VIDEO")
+
 
 class UsageInputTokensDetails(InputTokensDetails):
-    """Input token breakdown, extended with audio/text/image counts.
+    """Input token breakdown, extended with audio/text/image/video counts.
 
     Inherits ``cached_tokens`` from the Responses schema so existing data stays
     valid; the extra fields default to ``0`` and only apply to the usage types
-    that report them (realtime audio, image generation, transcription).
+    that report them (realtime audio, image generation, transcription, Gemini
+    video).
 
     ``cache_write_tokens`` is redefined with a default so this model stays
     constructible across OpenAI SDK versions: newer releases add it as a
@@ -69,19 +87,21 @@ class UsageInputTokensDetails(InputTokensDetails):
     audio_tokens: int = 0
     text_tokens: int = 0
     image_tokens: int = 0
+    video_tokens: int = 0
 
 
 class UsageOutputTokensDetails(OutputTokensDetails):
-    """Output token breakdown, extended with audio/text/image counts.
+    """Output token breakdown, extended with audio/text/image/video counts.
 
     Inherits ``reasoning_tokens`` from the Responses schema so existing data
     stays valid; the extra fields default to ``0`` and only apply to the usage
-    types that report them (realtime audio, image generation).
+    types that report them (realtime audio, image generation, Gemini video).
     """
 
     audio_tokens: int = 0
     text_tokens: int = 0
     image_tokens: int = 0
+    video_tokens: int = 0
 
 
 class Usage(pydantic.BaseModel):
@@ -112,20 +132,30 @@ class Usage(pydantic.BaseModel):
     @classmethod
     def from_openai(
         cls,
-        openai_usage: OpenAIUsage,
+        openai_usage: AnyUsage,
         *,
         inplace: bool = False,
     ) -> "Usage":
-        """Create Usage from OpenAI usage objects.
+        """Create Usage from any supported usage object.
 
-        Supports multiple OpenAI usage types and returns a new instance by default.
+        Accepts every OpenAI SDK usage type, plus google-genai's
+        ``usage_metadata`` and litellm's ``Usage`` when those extras are
+        installed. Returns a new instance by default.
         """
 
         if isinstance(openai_usage, agents.RunContextWrapper):
             openai_usage = openai_usage.usage
 
+        # litellm's Usage subclasses CompletionUsage, so it has to be matched
+        # before that branch or its extra detail is silently dropped.
+        if _is_litellm_usage(openai_usage):
+            usage = cls(**_litellm_fields(openai_usage))
+
+        elif _is_genai_usage(openai_usage):
+            usage = cls(**_genai_fields(openai_usage))
+
         # Token + cached/reasoning details: Responses, Agents SDK, Batch.
-        if isinstance(openai_usage, (ResponseUsage, agents.Usage, BatchUsage)):
+        elif isinstance(openai_usage, (ResponseUsage, agents.Usage, BatchUsage)):
             usage = cls(
                 requests=1,
                 input_tokens=openai_usage.input_tokens,
@@ -283,6 +313,8 @@ class Usage(pydantic.BaseModel):
             + other.input_tokens_details.text_tokens,
             image_tokens=self.input_tokens_details.image_tokens
             + other.input_tokens_details.image_tokens,
+            video_tokens=self.input_tokens_details.video_tokens
+            + other.input_tokens_details.video_tokens,
         )
 
         self.output_tokens_details = UsageOutputTokensDetails(
@@ -294,11 +326,13 @@ class Usage(pydantic.BaseModel):
             + other.output_tokens_details.text_tokens,
             image_tokens=self.output_tokens_details.image_tokens
             + other.output_tokens_details.image_tokens,
+            video_tokens=self.output_tokens_details.video_tokens
+            + other.output_tokens_details.video_tokens,
         )
 
     def estimate_cost(
         self,
-        model: typing.Union["OpenRouterModel", str, None] = None,
+        model: typing.Union["PricedModel", str, None] = None,
         *,
         realtime_pricing: bool = False,
         ignore_not_found: bool = True,
@@ -313,7 +347,7 @@ class Usage(pydantic.BaseModel):
 
     def estimate_cost_str(
         self,
-        model: typing.Union["OpenRouterModel", str, None] = None,
+        model: typing.Union["PricedModel", str, None] = None,
         *,
         realtime_pricing: bool = False,
         ignore_not_found: bool = True,
@@ -328,7 +362,7 @@ class Usage(pydantic.BaseModel):
             model = "gpt-4o-mini"
 
         if isinstance(model, str):
-            from openai_usage.extra.open_router import get_model
+            from openai_usage.pricing import get_model
 
             might_model = get_model(model, realtime_pricing=realtime_pricing)
             if might_model is None:
@@ -342,15 +376,22 @@ class Usage(pydantic.BaseModel):
 
         pricing = model.pricing
 
-        # Audio and image tokens are billed at distinct rates (0 for plain text
-        # usage). Cached, audio and image tokens are treated as disjoint subsets
-        # of the totals; the remainder is billed as plain text. Duration-based
-        # billing (``seconds``) has no OpenRouter rate and is not priced here.
+        # Cached, cache-write, audio and image tokens are treated as disjoint
+        # subsets of the totals and billed at their own rates; the remainder is
+        # billed as plain text. Video tokens are left in that remainder because
+        # neither catalog prices them per token, and providers that report them
+        # bill at the ordinary input rate.
         input_audio = self.input_tokens_details.audio_tokens
         input_image = self.input_tokens_details.image_tokens
         input_cached = self.input_tokens_details.cached_tokens
+        input_cache_write = self.input_tokens_details.cache_write_tokens
         input_text = max(
-            0, self.input_tokens - input_audio - input_image - input_cached
+            0,
+            self.input_tokens
+            - input_audio
+            - input_image
+            - input_cached
+            - input_cache_write,
         )
 
         output_audio = self.output_tokens_details.audio_tokens
@@ -360,13 +401,188 @@ class Usage(pydantic.BaseModel):
             0, self.output_tokens - output_audio - output_image - output_reasoning
         )
 
+        # Decimal(0) * Decimal("Infinity") raises, and a NaN would propagate
+        # into the returned string and poison any downstream aggregate.
+        seconds = self.seconds
+        if not math.isfinite(seconds):
+            logger.warning(f"Ignoring non-finite seconds {seconds!r}")
+            seconds = 0.0
+
         cost = (
             +pricing.price_per_request * self.requests
             + pricing.price_per_input_token_without_cached * input_text
             + pricing.price_per_input_token_with_cached * input_cached
+            + pricing.price_per_input_cache_write_token * input_cache_write
             + pricing.price_per_output_not_reasoning_token * output_text
             + pricing.price_per_output_reasoning_token * output_reasoning
-            + pricing.price_per_audio_token * (input_audio + output_audio)
-            + pricing.price_per_image_token * (input_image + output_image)
+            + pricing.price_per_input_audio_token * input_audio
+            + pricing.price_per_output_audio_token * output_audio
+            + pricing.price_per_input_image_token * input_image
+            + pricing.price_per_output_image_token * output_image
+            + pricing.price_per_second * decimal.Decimal(str(seconds))
         )
         return str(cost)
+
+
+def _imported_type(module_name: str, attribute: str) -> type | None:
+    """Return a type from an already-imported module, without importing it.
+
+    google-genai and litellm are optional and slow to import, but a caller can
+    only hand us one of their objects if the SDK is already loaded. Looking the
+    module up in ``sys.modules`` therefore costs nothing and never triggers an
+    import of an extra the caller did not install.
+    """
+    module = sys.modules.get(module_name)
+    if module is None:
+        return None
+    candidate = getattr(module, attribute, None)
+    return candidate if isinstance(candidate, type) else None
+
+
+def _is_genai_usage(usage: typing.Any) -> bool:
+    """Whether ``usage`` is a google-genai ``usage_metadata``."""
+    genai_type = _imported_type(
+        "google.genai.types", "GenerateContentResponseUsageMetadata"
+    )
+    return genai_type is not None and isinstance(usage, genai_type)
+
+
+def _is_litellm_usage(usage: typing.Any) -> bool:
+    """Whether ``usage`` is a litellm ``Usage``."""
+    litellm_type = _imported_type("litellm.types.utils", "Usage")
+    return litellm_type is not None and isinstance(usage, litellm_type)
+
+
+def _int(value: typing.Any) -> int:
+    """Coerce an optional token count to an int.
+
+    Both optional SDKs leave counts as ``None`` when a modality does not apply,
+    and litellm additionally deletes attributes whose value is ``None``. A
+    non-finite float would otherwise raise here rather than degrade, so it is
+    read as ``0`` alongside the other missing-value cases.
+    """
+    if isinstance(value, float) and not math.isfinite(value):
+        logger.warning(f"Ignoring non-finite token count {value!r}")
+        return 0
+    return int(value) if value else 0
+
+
+def _sum_modalities(*detail_lists: typing.Any) -> dict[str, int]:
+    """Total up google-genai ``ModalityTokenCount`` entries per modality.
+
+    Reads the enum by value so google-genai never has to be imported, and so an
+    unrecognized modality is skipped instead of raising.
+    """
+    totals = {modality: 0 for modality in _TRACKED_MODALITIES}
+    for details in detail_lists:
+        for item in details or ():
+            modality = getattr(item, "modality", None)
+            name = getattr(modality, "value", modality)
+            if name in totals:
+                totals[name] += _int(getattr(item, "token_count", None))
+    return totals
+
+
+def _genai_fields(genai_usage: typing.Any) -> dict[str, typing.Any]:
+    """Map a google-genai ``usage_metadata`` onto ``Usage`` fields.
+
+    Every field on the Gemini schema is optional, so absent counts read as
+    ``0``.
+    """
+    # Gemini reports thinking separately from the visible answer, while
+    # ``output_tokens`` here means everything billed as output.
+    candidates = _int(genai_usage.candidates_token_count)
+    thoughts = _int(genai_usage.thoughts_token_count)
+
+    # Tool-use prompts are billed as input alongside the ordinary prompt.
+    prompt = _int(genai_usage.prompt_token_count)
+    tool_use_prompt = _int(genai_usage.tool_use_prompt_token_count)
+
+    input_modalities = _sum_modalities(
+        genai_usage.prompt_tokens_details,
+        genai_usage.tool_use_prompt_tokens_details,
+    )
+    output_modalities = _sum_modalities(genai_usage.candidates_tokens_details)
+
+    # The prompt breakdown covers the whole prompt, cached content included, so
+    # a cached audio segment appears in both the AUDIO bucket and the cached
+    # count. The estimator treats those as disjoint, so remove the cached
+    # modalities here rather than bill them at two rates at once.
+    cached_modalities = _sum_modalities(genai_usage.cache_tokens_details)
+    input_modalities = {
+        name: max(0, count - cached_modalities[name])
+        for name, count in input_modalities.items()
+    }
+
+    cached = _int(genai_usage.cached_content_token_count)
+    input_tokens = prompt + tool_use_prompt
+    output_tokens = candidates + thoughts
+
+    # total_token_count is optional like everything else, and is defined
+    # upstream as exactly these parts summed.
+    total_tokens = _int(genai_usage.total_token_count) or input_tokens + output_tokens
+
+    return {
+        "requests": 1,
+        "input_tokens": input_tokens,
+        "input_tokens_details": UsageInputTokensDetails(
+            cached_tokens=cached,
+            audio_tokens=input_modalities["AUDIO"],
+            text_tokens=input_modalities["TEXT"],
+            image_tokens=input_modalities["IMAGE"],
+            video_tokens=input_modalities["VIDEO"],
+        ),
+        "output_tokens": output_tokens,
+        "output_tokens_details": UsageOutputTokensDetails(
+            reasoning_tokens=thoughts,
+            audio_tokens=output_modalities["AUDIO"],
+            text_tokens=output_modalities["TEXT"],
+            image_tokens=output_modalities["IMAGE"],
+            video_tokens=output_modalities["VIDEO"],
+        ),
+        "total_tokens": total_tokens,
+    }
+
+
+def _litellm_fields(litellm_usage: typing.Any) -> dict[str, typing.Any]:
+    """Map a litellm ``Usage`` onto ``Usage`` fields.
+
+    litellm normalizes every provider onto the Chat Completions shape and then
+    widens it, so this reads the extra detail its wrappers add on top of
+    ``CompletionUsage``.
+    """
+    p_details = litellm_usage.prompt_tokens_details
+    c_details = litellm_usage.completion_tokens_details
+
+    # litellm folds Anthropic's cache buckets into prompt_tokens, so both stay
+    # disjoint subsets of the input total, the way the estimator wants.
+    cache_write = _int(getattr(p_details, "cache_creation_tokens", None))
+    if not cache_write:
+        cache_write = _int(getattr(litellm_usage, "_cache_creation_input_tokens", 0))
+
+    cached = _int(getattr(p_details, "cached_tokens", None))
+    if not cached:
+        cached = _int(getattr(litellm_usage, "_cache_read_input_tokens", 0))
+
+    return {
+        "requests": 1,
+        "input_tokens": _int(litellm_usage.prompt_tokens),
+        "input_tokens_details": UsageInputTokensDetails(
+            cached_tokens=cached,
+            cache_write_tokens=cache_write,
+            audio_tokens=_int(getattr(p_details, "audio_tokens", None)),
+            text_tokens=_int(getattr(p_details, "text_tokens", None)),
+            image_tokens=_int(getattr(p_details, "image_tokens", None)),
+            video_tokens=_int(getattr(p_details, "video_tokens", None)),
+        ),
+        "output_tokens": _int(litellm_usage.completion_tokens),
+        "output_tokens_details": UsageOutputTokensDetails(
+            reasoning_tokens=_int(getattr(c_details, "reasoning_tokens", None)),
+            audio_tokens=_int(getattr(c_details, "audio_tokens", None)),
+            text_tokens=_int(getattr(c_details, "text_tokens", None)),
+            image_tokens=_int(getattr(c_details, "image_tokens", None)),
+            video_tokens=_int(getattr(c_details, "video_tokens", None)),
+        ),
+        "total_tokens": _int(litellm_usage.total_tokens),
+        "cost": getattr(litellm_usage, "cost", None),
+    }

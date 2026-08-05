@@ -39,20 +39,71 @@ usage.estimate_cost()          # uses usage.model
 usage.estimate_cost("o1")      # argument wins over usage.model
 ```
 
-Model names are matched flexibly against the OpenRouter catalog — exact matches
-win, and otherwise the closest non-greedy match is used. You can also pass a
-fully resolved `OpenRouterModel` directly.
-
 ## Pricing data
 
-Pricing comes from [OpenRouter](https://openrouter.ai/).
+Pricing comes from two catalogs, both fetched at runtime:
 
-- **Default** — a snapshot bundled with the package. Fast and offline.
-- **`realtime_pricing=True`** — fetches the latest prices from the OpenRouter API.
+| Source | Covers |
+| --- | --- |
+| [LiteLLM](https://github.com/BerriAI/litellm) | ~3,000 models across every provider, including the embedding, image, audio and transcription models OpenRouter never proxies |
+| [OpenRouter](https://openrouter.ai/) | The chat models OpenRouter proxies, under `vendor/model` names |
+
+A name is resolved in three steps:
+
+1. **LiteLLM exact key.** LiteLLM files models under their native ids
+   (`gpt-4o`, `whisper-1`, `claude-sonnet-4-5`), so most names hit here
+   immediately.
+2. **OpenRouter relaxed matching.** Handles `vendor/model` names, aliases, and
+   separator differences (`claude-haiku-4-5` finds `anthropic/claude-haiku-4.5`).
+3. **LiteLLM relaxed matching**, as a last resort.
+
+You can also pass a fully resolved model object instead of a name.
+
+### Caching
+
+Both catalogs are cached on disk so the download happens at most once a day.
+
+| Setting | Default | Environment variable |
+| --- | --- | --- |
+| Cache directory | `./.cache/openai-usage/` | `OPENAI_USAGE_CACHE_DIR` |
+| Time to live | `86400` (one day) | `OPENAI_USAGE_CACHE_TTL` |
+| Disable network | off | `OPENAI_USAGE_OFFLINE` |
+
+Passing `realtime_pricing=True` ignores the TTL and re-downloads both catalogs:
 
 ```python
 usage.estimate_cost("anthropic/claude-3-haiku", realtime_pricing=True)
 ```
+
+### When the network is unavailable
+
+Nothing raises. Each step falls through to the next:
+
+```
+fresh cache -> network fetch -> stale cache -> bundled snapshot
+```
+
+The bundled snapshot is an OpenRouter catalog shipped inside the package, so
+pricing keeps working offline for the models it covers. LiteLLM has no bundled
+snapshot; without a cache entry its lookups return nothing and resolution falls
+back to OpenRouter.
+
+Set `OPENAI_USAGE_OFFLINE=1` to skip the network entirely — useful in airgapped
+environments and in tests. Connect and read timeouts are deliberately short, so
+an unreachable network fails fast instead of stalling a caller the bundled
+snapshot could have served.
+
+A catalog that had to degrade — a failed fetch, or a fall back to the bundled
+snapshot — is only held in memory for a minute rather than the full day, so a
+process that started while the network was down picks up the real catalog once
+it recovers.
+
+### Cost of the first lookup
+
+Catalog entries are validated one at a time, as they are looked up, rather than
+all at once. A first lookup with a warm cache costs a few milliseconds and
+holds only the models it actually returned; the ~3,000-entry LiteLLM catalog is
+never fully materialized unless you ask for it with `get_models()`.
 
 ## How the estimate is computed
 
@@ -61,12 +112,16 @@ Tokens are split into disjoint buckets and each is priced at its own rate:
 | Bucket | Rate |
 | --- | --- |
 | Cached input tokens | cache-read price |
-| Audio tokens (input + output) | audio price |
-| Image tokens (input + output) | image price |
-| Reasoning output tokens | internal-reasoning price |
+| Cache-write input tokens | cache-creation price |
+| Audio input tokens | input audio price |
+| Audio output tokens | output audio price |
+| Image input tokens | input image price |
+| Image output tokens | output image price |
+| Reasoning output tokens | reasoning price, falling back to the completion price |
 | Remaining input tokens | prompt price |
 | Remaining output tokens | completion price |
 | Requests | per-request price |
+| Seconds | per-second price |
 
 When a usage object carries no audio, image, cached, or reasoning detail — an
 ordinary chat completion, say — every special bucket is `0` and the math reduces
@@ -89,17 +144,20 @@ usage.estimate_cost("not-a-real-model", ignore_not_found=False)  # raises ValueE
 
 ## Limitations
 
-!!! warning "Audio and image rates are approximate"
-    OpenRouter exposes a single `audio` rate and a single `image` rate per
-    model. The estimator applies that one rate to **both** input and output
-    tokens of that modality. Realtime output audio in particular is billed at a
-    higher rate by OpenAI, so audio-heavy realtime sessions can be
-    **underestimated**. Cached and audio/image tokens are also assumed to be
-    disjoint subsets of the totals. For exact figures, price against OpenAI's
-    official rate card.
+!!! warning "Video tokens are billed as text"
+    `video_tokens` are recorded for reporting, but neither catalog publishes a
+    per-token video rate, so they stay in the plain-text remainder and are
+    billed at the ordinary input rate. That matches how the providers reporting
+    them bill today, but verify it if video is a large share of your spend.
 
-!!! warning "Duration billing is not priced"
-    Duration-billed transcription (e.g. `whisper-1`, which charges per second)
-    populates `Usage.seconds`, but OpenRouter has no per-second rate, so this
-    time **does not contribute to the cost estimate**. The seconds are tracked
-    for your own reporting; compute their cost separately if you need it.
+!!! warning "Detail buckets are assumed disjoint"
+    Cached, cache-write, audio and image counts are subtracted from the totals
+    to derive the plain-text remainder. If a provider reports overlapping
+    buckets — a cached audio token counted in both — that token is subtracted
+    twice and the estimate comes out low.
+
+!!! note "OpenRouter publishes one rate per modality"
+    OpenRouter has a single `audio` and a single `image` rate per model, so a
+    model resolved through OpenRouter uses that one rate for both input and
+    output. LiteLLM prices them separately and is tried first, so this normally
+    only applies to models LiteLLM does not carry.

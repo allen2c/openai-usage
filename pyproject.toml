@@ -1,18 +1,18 @@
 [project]
 authors = [{ name = "Allen Chou", email = "f1470891079@gmail.com" }]
-dependencies = [
-  "dictpress",
-  "openai",
-  "openai-agents",
-  "pydantic",
-  "str-or-none",
-]
+dependencies = ["openai", "openai-agents", "pydantic", "requests"]
 description = "Simple Library for OpenAI Usage"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 name = "openai-usage"
 readme = "README.md"
 requires-python = ">=3.11,<4"
-version = "0.9.1"
+version = "0.10.0"
+
+[project.optional-dependencies]
+all = ["google-genai", "litellm"]
+google-genai = ["google-genai"]
+litellm = ["litellm"]
 
 [project.urls]
 Homepage = "https://github.com/allen2c/openai-usage"
@@ -22,15 +22,13 @@ Repository = "https://github.com/allen2c/openai-usage"
 [tool.poetry]
 packages = [{ include = "openai_usage" }]
 
-[tool.poetry.extras]
-all = []
-
 [tool.poetry.group.dev.dependencies]
 black = { extras = ["jupyter"], version = "*" }
 codepress = "*"
 isort = "*"
 mkdocs-material = "*"
 poetry-plugin-export = "*"
+pyright = "*"
 pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
@@ -49,13 +47,21 @@ profile = "black"
 line-length = 88
 
 [tool.ruff]
-line-length = 120
+line-length = 88
 
 [tool.ruff.lint]
 ignore = ["E203"]
+select = ["E", "F", "W"]
+
+[tool.pyright]
+include = ["openai_usage", "scripts", "tests"]
+pythonVersion = "3.11"
+reportMissingImports = "error"
+typeCheckingMode = "standard"
 
 [tool.pytest.ini_options]
 env = ["ENVIRONMENT=test", "PYTEST_IS_RUNNING=true"]
+testpaths = ["tests"]
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
