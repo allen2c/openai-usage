@@ -212,3 +212,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# MkDocs build output
+site/
+
+# macOS
+.DS_Store
