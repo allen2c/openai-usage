@@ -29,6 +29,9 @@ Run `make check` before committing. It must be clean.
   paths working via shims, give new model fields defaults so stored JSON still
   validates, and keep existing keyword arguments. Never ship a fatal
   incompatibility.
+- **Keep the API small.** Widen an existing entry point rather than adding a
+  sibling for each case, and do not export aliases "just in case" — every
+  public name has to stay compatible forever.
 - **No comments in `pyproject.toml`.** Put the rationale in the commit message.
 - **File layout:** docstring, imports, constants, public functions, public
   classes, private functions and classes.

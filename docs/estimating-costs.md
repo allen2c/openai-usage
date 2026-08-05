@@ -93,6 +93,18 @@ environments and in tests. Connect and read timeouts are deliberately short, so
 an unreachable network fails fast instead of stalling a caller the bundled
 snapshot could have served.
 
+A catalog that had to degrade — a failed fetch, or a fall back to the bundled
+snapshot — is only held in memory for a minute rather than the full day, so a
+process that started while the network was down picks up the real catalog once
+it recovers.
+
+### Cost of the first lookup
+
+Catalog entries are validated one at a time, as they are looked up, rather than
+all at once. A first lookup with a warm cache costs a few milliseconds and
+holds only the models it actually returned; the ~3,000-entry LiteLLM catalog is
+never fully materialized unless you ask for it with `get_models()`.
+
 ## How the estimate is computed
 
 Tokens are split into disjoint buckets and each is priced at its own rate:

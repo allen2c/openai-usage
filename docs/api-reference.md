@@ -134,17 +134,39 @@ the environment variables.
 
 ### `openai_usage.pricing.litellm`
 
-`get_models()`, `get_model(name)`, `get_model_exact(name)`,
-`get_model_loose(name)`, plus `LiteLLMModel` and `LiteLLMPricing`. Returns an
-empty catalog rather than raising when the source is unreachable.
+| Function | Returns |
+| --- | --- |
+| `get_model(name)` | One `LiteLLMModel`, exact key first then relaxed |
+| `get_model_exact(name)` | Exact catalog key only, case-insensitive |
+| `get_model_loose(name)` | Relaxed matching only |
+| `get_entries()` | The raw catalog entries as `dict[str, dict]` |
+| `get_models()` | The whole catalog, validated |
+
+The catalog is held as raw entries and validated one model at a time, so a
+lookup builds only what it returns. `get_models()` validates all ~3,000 of
+them, so prefer `get_model()` unless you genuinely want the full set.
+
+All of these return empty or `None` rather than raising when the source is
+unreachable — there is no bundled snapshot for this catalog.
 
 ### `openai_usage.pricing.open_router`
 
-`get_models(realtime_pricing=False)`, `get_model(name)`, `matches_loosely()`,
-plus `OpenRouterModel`, `OpenRouterPricing` and the rest of the catalog schema.
+`get_models(realtime_pricing=False)`, `get_model(name)`, plus
+`OpenRouterModel`, `OpenRouterPricing` and the rest of the catalog schema.
 
 `OpenRouterPricing` keeps its original `price_per_audio_token` and
 `price_per_image_token` properties alongside the split input/output ones.
+
+Name matching is exposed too, since both catalogs share it:
+
+| Function | Purpose |
+| --- | --- |
+| `matches_loosely(name, model_id)` | One-shot relaxed match |
+| `normalize_query(name)` | Precompute the three forms a name is matched under |
+| `matches_normalized(query, model_id)` | Match an already-normalized query |
+
+Use the latter two when scanning many ids; `matches_loosely` re-derives the
+normalized forms on every call.
 
 !!! note "`openai_usage.extra.open_router` is deprecated"
     It still re-exports everything it did in v0.9.x, so existing imports keep

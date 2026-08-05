@@ -226,12 +226,12 @@ def _build(name: str) -> "LiteLLMModel":
     """Validate one catalog entry, reusing it on later lookups."""
     model = _built.get(name)
     if model is None:
-        entry = _entries_cache.get() or {}
+        entry = (_entries_cache.get() or {}).get(name, {})
         model = LiteLLMModel(
             id=name,
-            pricing=LiteLLMPricing.model_validate(entry.get(name, {})),
-            litellm_provider=entry.get(name, {}).get("litellm_provider"),
-            mode=entry.get(name, {}).get("mode"),
+            pricing=LiteLLMPricing.model_validate(entry),
+            litellm_provider=entry.get("litellm_provider"),
+            mode=entry.get("mode"),
         )
         _built[name] = model
     return model
