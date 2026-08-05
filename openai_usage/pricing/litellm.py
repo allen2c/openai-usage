@@ -32,29 +32,42 @@ CACHE_FILENAME = "litellm_model_prices.json"
 # describing a billable model.
 NON_MODEL_KEYS = frozenset({"sample_spec", "fallback_generalizations"})
 
-_models_cache: "TTLCache[dict[str, LiteLLMModel]]" = TTLCache()
+# The catalog is held as raw dicts and validated one entry at a time. Building
+# all ~3,000 pydantic models up front cost ~30 ms and ~4.5 MB to answer a
+# lookup that reads exactly one of them.
+_entries_cache: "TTLCache[dict[str, dict]]" = TTLCache()
+_built: dict[str, "LiteLLMModel"] = {}
 
 
 def get_models(*, force_refresh: bool = False) -> dict[str, "LiteLLMModel"]:
-    """Return the LiteLLM catalog, or an empty map when it is unavailable."""
+    """Return the whole LiteLLM catalog, validated.
+
+    Every entry is built here, so prefer :func:`get_model` when you only need
+    one. Returns an empty map when the catalog is unavailable.
+    """
+    return {name: _build(name) for name in get_entries(force_refresh=force_refresh)}
+
+
+def get_entries(*, force_refresh: bool = False) -> dict[str, dict]:
+    """Return the raw catalog entries, keyed by model name."""
     if not force_refresh:
-        cached = _models_cache.get()
+        cached = _entries_cache.get()
         if cached is not None:
             return cached
 
     text = fetch_text(MODELS_URL, CACHE_FILENAME, force_refresh=force_refresh)
     if text is None:
         logger.debug("LiteLLM pricing catalog unavailable")
-        return _models_cache.set({}, ttl=DEGRADED_TTL_SECONDS)
+        return _set_entries({}, ttl=DEGRADED_TTL_SECONDS)
 
     try:
-        models = _parse(text)
-    except (json.JSONDecodeError, pydantic.ValidationError, TypeError) as e:
+        entries = _parse(text)
+    except (json.JSONDecodeError, TypeError) as e:
         logger.warning(f"Could not parse the LiteLLM pricing catalog: {e}")
-        return _models_cache.set({}, ttl=DEGRADED_TTL_SECONDS)
+        return _set_entries({}, ttl=DEGRADED_TTL_SECONDS)
 
-    logger.info(f"There are {len(models)} LiteLLM models")
-    return _models_cache.set(models)
+    logger.info(f"There are {len(entries)} LiteLLM models")
+    return _set_entries(entries)
 
 
 def get_model_exact(
@@ -66,15 +79,14 @@ def get_model_exact(
     ``claude-sonnet-4-5``), which is what callers normally pass, so this
     resolves most names without any fuzzy matching at all.
     """
-    models = get_models(force_refresh=force_refresh)
-    model = models.get(model_name)
-    if model is not None:
-        return model
+    entries = get_entries(force_refresh=force_refresh)
+    if model_name in entries:
+        return _build(model_name)
 
     lowered = model_name.lower()
-    for name, candidate in models.items():
+    for name in entries:
         if name.lower() == lowered:
-            return candidate
+            return _build(name)
     return None
 
 
@@ -82,28 +94,29 @@ def get_model_loose(
     model_name: str, *, force_refresh: bool = False
 ) -> typing.Optional["LiteLLMModel"]:
     """Look up a model by relaxed matching, mirroring the OpenRouter rules."""
-    from openai_usage.pricing.open_router import matches_loosely
+    from openai_usage.pricing.open_router import matches_normalized, normalize_query
 
-    models = get_models(force_refresh=force_refresh)
+    entries = get_entries(force_refresh=force_refresh)
+    query = normalize_query(model_name)
 
-    matches = [m for name, m in models.items() if matches_loosely(model_name, name)]
-    if not matches:
+    names = [name for name in entries if matches_normalized(query, name)]
+    if not names:
         logger.debug(f"No LiteLLM model found for '{model_name}'")
         return None
 
-    if len(matches) > 1:
+    if len(names) > 1:
         logger.warning(
             f"Multiple LiteLLM models found for '{model_name}': "
-            + f"{', '.join(m.id for m in matches[:10])}, "
+            + f"{', '.join(names[:10])}, "
             + "choose the most not greedy one"
         )
-        matches.sort(key=lambda m: len(m.id.split("/")[-1]))
+        names.sort(key=lambda name: len(name.split("/")[-1]))
 
     logger.warning(
-        f"Found LiteLLM model '{matches[0].id}' for '{model_name}', "
+        f"Found LiteLLM model '{names[0]}' for '{model_name}', "
         + "the model name is not strict"
     )
-    return matches[0]
+    return _build(names[0])
 
 
 def get_model(
@@ -203,6 +216,27 @@ class LiteLLMModel(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(extra="ignore")
 
 
+def _set_entries(entries: dict[str, dict], *, ttl: float | None = None) -> dict:
+    """Store the raw catalog, discarding models built from the previous one."""
+    _built.clear()
+    return _entries_cache.set(entries, ttl=ttl)
+
+
+def _build(name: str) -> "LiteLLMModel":
+    """Validate one catalog entry, reusing it on later lookups."""
+    model = _built.get(name)
+    if model is None:
+        entry = _entries_cache.get() or {}
+        model = LiteLLMModel(
+            id=name,
+            pricing=LiteLLMPricing.model_validate(entry.get(name, {})),
+            litellm_provider=entry.get(name, {}).get("litellm_provider"),
+            mode=entry.get(name, {}).get("mode"),
+        )
+        _built[name] = model
+    return model
+
+
 def _decimal(value: float | None) -> decimal.Decimal:
     """Convert a JSON rate to ``Decimal`` without inheriting binary float noise.
 
@@ -214,8 +248,8 @@ def _decimal(value: float | None) -> decimal.Decimal:
     return decimal.Decimal(str(value))
 
 
-def _parse(text: str) -> dict[str, LiteLLMModel]:
-    """Build the catalog map, skipping the non-model bookkeeping entries.
+def _parse(text: str) -> dict[str, dict]:
+    """Extract the model entries, skipping the non-model bookkeeping ones.
 
     Raises ``TypeError`` when the payload parses as JSON but is not the
     expected object, which an upstream format change or an error page served
@@ -225,14 +259,8 @@ def _parse(text: str) -> dict[str, LiteLLMModel]:
     if not isinstance(raw, dict):
         raise TypeError(f"Expected a JSON object, got {type(raw).__name__}")
 
-    models: dict[str, LiteLLMModel] = {}
-    for name, entry in raw.items():
-        if name in NON_MODEL_KEYS or not isinstance(entry, dict):
-            continue
-        models[name] = LiteLLMModel(
-            id=name,
-            pricing=LiteLLMPricing.model_validate(entry),
-            litellm_provider=entry.get("litellm_provider"),
-            mode=entry.get("mode"),
-        )
-    return models
+    return {
+        name: entry
+        for name, entry in raw.items()
+        if name not in NON_MODEL_KEYS and isinstance(entry, dict)
+    }

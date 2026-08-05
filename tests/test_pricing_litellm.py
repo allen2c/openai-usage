@@ -54,14 +54,14 @@ CATALOG = {
 @pytest.fixture(autouse=True)
 def catalog(monkeypatch):
     """Serve a fixed catalog and reset the in-process memo around each test."""
-    litellm._models_cache.clear()
+    litellm._entries_cache.clear()
     monkeypatch.setattr(
         litellm,
         "fetch_text",
         lambda url, filename, force_refresh=False: json.dumps(CATALOG),
     )
     yield
-    litellm._models_cache.clear()
+    litellm._entries_cache.clear()
 
 
 def test_non_model_entries_are_skipped():
@@ -147,7 +147,7 @@ def test_exact_lookup_misses_are_none():
 
 
 def test_unavailable_catalog_yields_an_empty_map(monkeypatch):
-    litellm._models_cache.clear()
+    litellm._entries_cache.clear()
     monkeypatch.setattr(
         litellm, "fetch_text", lambda url, filename, force_refresh=False: None
     )
@@ -156,7 +156,7 @@ def test_unavailable_catalog_yields_an_empty_map(monkeypatch):
 
 
 def test_unparseable_catalog_yields_an_empty_map(monkeypatch):
-    litellm._models_cache.clear()
+    litellm._entries_cache.clear()
     monkeypatch.setattr(
         litellm, "fetch_text", lambda url, filename, force_refresh=False: "{not json"
     )
@@ -192,7 +192,7 @@ def test_a_free_reasoning_rate_is_not_replaced_by_the_output_rate():
 
 def test_a_failed_fetch_is_retried_soon_rather_than_pinned_for_a_day(monkeypatch):
     """One blip near startup must not cost a process every LiteLLM price."""
-    litellm._models_cache.clear()
+    litellm._entries_cache.clear()
     calls = {"n": 0}
 
     def flaky(url, filename, force_refresh=False):
@@ -222,8 +222,53 @@ def test_degraded_window_is_much_shorter_than_the_normal_ttl():
 @pytest.mark.parametrize("payload", ["[1, 2, 3]", '"a string"', "123", "null"])
 def test_a_non_object_payload_does_not_crash(monkeypatch, payload):
     """GitHub raw can serve an error page that still parses as JSON."""
-    litellm._models_cache.clear()
+    litellm._entries_cache.clear()
     monkeypatch.setattr(
         litellm, "fetch_text", lambda url, filename, force_refresh=False: payload
     )
     assert litellm.get_models() == {}
+
+
+def test_only_the_looked_up_entries_are_validated():
+    """Building all ~3,000 models to read one cost ~30 ms and ~4.5 MB."""
+    litellm._entries_cache.clear()
+    litellm._built.clear()
+
+    assert litellm.get_model_exact("gpt-4o") is not None
+    assert litellm.get_model_exact("whisper-1") is not None
+
+    assert set(litellm._built) == {"gpt-4o", "whisper-1"}
+    assert len(litellm.get_entries()) > len(litellm._built)
+
+
+def test_a_built_model_is_reused():
+    litellm._entries_cache.clear()
+    litellm._built.clear()
+    assert litellm.get_model_exact("gpt-4o") is litellm.get_model_exact("gpt-4o")
+
+
+def test_reloading_the_catalog_discards_stale_models(monkeypatch):
+    litellm._entries_cache.clear()
+    litellm._built.clear()
+    first = litellm.get_model_exact("gpt-4o")
+    assert first is not None
+
+    changed = dict(CATALOG)
+    changed["gpt-4o"] = {**CATALOG["gpt-4o"], "input_cost_per_token": 9.9e-06}
+    monkeypatch.setattr(
+        litellm,
+        "fetch_text",
+        lambda url, filename, force_refresh=False: json.dumps(changed),
+    )
+
+    reloaded = litellm.get_model_exact("gpt-4o", force_refresh=True)
+    assert reloaded is not None
+    assert reloaded.pricing.price_per_input_token_without_cached == decimal.Decimal(
+        "9.9e-06"
+    )
+
+
+def test_get_models_still_returns_the_whole_catalog():
+    models = litellm.get_models()
+    assert len(models) == len(litellm.get_entries())
+    assert all(isinstance(m, litellm.LiteLLMModel) for m in models.values())

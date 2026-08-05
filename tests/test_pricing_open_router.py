@@ -95,3 +95,46 @@ def test_a_free_cache_read_rate_is_not_replaced_by_the_prompt_rate():
 
 def test_an_absent_cache_read_rate_still_falls_back():
     assert _pricing().price_per_input_token_with_cached == decimal.Decimal("0.000003")
+
+
+def test_merge_keeps_validated_models_without_a_round_trip():
+    """The round-trip re-validated the whole catalog to add a few entries."""
+    from openai_usage.pricing.open_router import _supplemental_models  # noqa: PLC2701
+    from openai_usage.pricing.open_router import (
+        get_models,
+    )
+
+    merged = get_models()
+    ids = {m.id for m in merged.data}
+    for supplemental in _supplemental_models().data:
+        assert supplemental.id in ids
+
+
+def test_supplemental_catalog_is_read_once():
+    from openai_usage.pricing.open_router import _supplemental_models
+
+    assert _supplemental_models() is _supplemental_models()
+
+
+def test_loose_matching_is_literal_not_a_regex():
+    from openai_usage.pricing.open_router import matches_loosely
+
+    assert matches_loosely("gpt-4.1", "openai/gpt-4.1-nano") is True
+    # "." must not behave as a wildcard.
+    assert matches_loosely("gpt-4x1", "openai/gpt-4.1-nano") is False
+    # Metacharacters must not raise.
+    assert matches_loosely("x[y", "openai/gpt-4o") is False
+
+
+def test_normalized_query_matches_the_convenience_wrapper():
+    from openai_usage.pricing.open_router import (
+        matches_loosely,
+        matches_normalized,
+        normalize_query,
+    )
+
+    for name in ["claude-haiku-4-5", "kimi-k2:thinking", "gpt-4.1"]:
+        for model_id in ["anthropic/claude-haiku-4.5", "moonshotai/kimi-k2-thinking"]:
+            assert matches_normalized(normalize_query(name), model_id) == (
+                matches_loosely(name, model_id)
+            )

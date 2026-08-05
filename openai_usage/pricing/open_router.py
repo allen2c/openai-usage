@@ -1,9 +1,8 @@
 import decimal
 import enum
-import json
+import functools
 import logging
 import pathlib
-import re
 import typing
 
 import pydantic
@@ -59,17 +58,38 @@ def get_models(realtime_pricing: bool = False) -> "GetOpenRouterModelsResponse":
     return _models_cache.set(models.merge(_supplemental_models()), ttl=degraded_ttl)
 
 
+def normalize_query(model_name: str) -> tuple[str, str, str]:
+    """Precompute the three forms a name is matched under.
+
+    Scanning a catalog re-derived these for every entry, so callers that loop
+    over thousands of ids compute them once and pass them to
+    :func:`matches_normalized` instead.
+    """
+    return (
+        model_name.lower(),
+        model_name.translate(DASH_TRANS).lower(),
+        model_name.translate(DROP_TRANS).lower(),
+    )
+
+
+def matches_normalized(query: tuple[str, str, str], model_id: str) -> bool:
+    """Whether ``model_id`` matches an already-normalized query."""
+    verbatim, dashed, dropped = query
+    lowered = model_id.lower()
+    return (
+        verbatim in lowered
+        or dashed in lowered.translate(DASH_TRANS)
+        or dropped in lowered.translate(DROP_TRANS)
+    )
+
+
 def matches_loosely(model_name: str, model_id: str) -> bool:
     """Whether ``model_id`` matches ``model_name`` under any normalization.
 
     Tries the name verbatim, then dash-separated, then with every separator
     dropped, so ``claude-haiku-4-5`` still finds ``anthropic/claude-haiku-4.5``.
     """
-    return (
-        _contains(model_name, model_id)
-        or _contains(model_name.translate(DASH_TRANS), model_id.translate(DASH_TRANS))
-        or _contains(model_name.translate(DROP_TRANS), model_id.translate(DROP_TRANS))
-    )
+    return matches_normalized(normalize_query(model_name), model_id)
 
 
 def get_model(
@@ -81,14 +101,16 @@ def get_model(
     Handles multiple matches by choosing shortest ID.
     """
     all_models = get_models(realtime_pricing=realtime_pricing)
+    query = normalize_query(model_name)
+    lowered_name = query[0]
 
     # Keyed by id so a model matching under several normalizations is counted
     # once; otherwise a single hit looks like an ambiguous one.
     matches: dict[str, OpenRouterModel] = {}
     for model in all_models.data:
-        if model.id.lower().endswith(model_name.lower()):
+        if model.id.lower().endswith(lowered_name):
             return model
-        if matches_loosely(model_name, model.id):
+        if matches_normalized(query, model.id):
             matches.setdefault(model.id, model)
 
     models = list(matches.values())
@@ -372,13 +394,13 @@ class GetOpenRouterModelsResponse(pydantic.BaseModel):
         self, other: "GetOpenRouterModelsResponse"
     ) -> "GetOpenRouterModelsResponse":
         """Combine two catalogs, keeping this one's entry on an id collision."""
+        # The already-validated models are reused directly. Round-tripping them
+        # back through dump_json and model_validate re-validated the whole
+        # upstream catalog just to fold in a handful of supplemental entries.
         by_id: dict[str, OpenRouterModel] = {}
         for model in self.data + other.data:
             by_id.setdefault(model.id, model)
-        data_dict = json.loads(
-            pydantic.TypeAdapter(list[OpenRouterModel]).dump_json(list(by_id.values()))
-        )
-        return GetOpenRouterModelsResponse.model_validate({"data": data_dict})
+        return GetOpenRouterModelsResponse.model_construct(data=list(by_id.values()))
 
 
 def _bundled_models() -> "GetOpenRouterModelsResponse":
@@ -388,20 +410,15 @@ def _bundled_models() -> "GetOpenRouterModelsResponse":
     )
 
 
+@functools.lru_cache(maxsize=1)
 def _supplemental_models() -> "GetOpenRouterModelsResponse":
-    """Hand-maintained models OpenRouter's catalog does not carry."""
+    """Hand-maintained models OpenRouter's catalog does not carry.
+
+    Cached because the file ships with the package and never changes at
+    runtime, yet it was re-read and re-validated on every catalog load.
+    """
     return GetOpenRouterModelsResponse.model_validate_json(
         pathlib.Path(__file__)
         .parent.parent.joinpath("models_voyageai.json")
         .read_text()
     )
-
-
-def _contains(needle: str, haystack: str) -> bool:
-    """Case-insensitive substring test that treats ``needle`` literally.
-
-    Model names carry regex metacharacters (``gpt-4.1``, ``kimi-k2:thinking``),
-    so the needle is escaped: an unescaped name would let ``.`` match any
-    character, and a name containing ``(`` or ``+`` would raise ``re.error``.
-    """
-    return re.search(re.escape(needle), haystack, re.IGNORECASE) is not None
